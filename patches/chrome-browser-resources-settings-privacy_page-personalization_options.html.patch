@@ -23,7 +23,7 @@ index 9d35ae4a8be3f92fb0bd665eb08558bea65ba0c6..628d2aabcf87bccbd543c7184a27c2b0
      </template>
  </if><!-- chromeos -->
 +</if><!-- _google_chrome -->
-+<if expr="_chromium">
++<if expr="True">
  <if expr="not chromeos_ash">
      <settings-toggle-button id="metricsReportingControl"
          class="hr"
