@@ -16,9 +16,22 @@ PrivateWindowSearchEngineProviderService::
 PrivateWindowSearchEngineProviderService(Profile* otr_profile)
     : SearchEngineProviderService(otr_profile) {
   DCHECK(otr_profile->IsIncognitoProfile());
+  private_search_provider_guid_.Init(
+      prefs::kSyncedDefaultPrivateSearchProviderGUID,
+      otr_profile_->GetOriginalProfile()->GetPrefs(),
+      base::BindRepeating(
+          &PrivateWindowSearchEngineProviderService::OnPreferenceChanged,
+          base::Unretained(this)));
 
   if (brave::UseAlternativeSearchEngineProviderEnabled(otr_profile)) {
     brave::SetShowAlternativeSearchEngineProviderToggle(otr_profile);
+  }
+
+  // Set initial search provider for private profile.
+  if (private_search_provider_guid_.IsDefaultValue()) {
+    private_search_provider_guid_.SetValue(
+        original_template_url_service_->GetDefaultSearchProvider()
+            ->sync_guid());
   }
 
   const bool use_extension_provider = ShouldUseExtensionSearchProvider();
@@ -55,7 +68,7 @@ ConfigureSearchEngineProvider() {
 
   UseAlternativeSearchEngineProvider()
       ? ChangeToAlternativeSearchEngineProvider()
-      : ChangeToNormalWindowSearchEngineProvider();
+      : ConfigurePrivateWindowSearchEngineProvider();
 }
 
 void PrivateWindowSearchEngineProviderService::OnTemplateURLServiceChanged() {
@@ -71,7 +84,22 @@ void PrivateWindowSearchEngineProviderService::OnTemplateURLServiceChanged() {
   ConfigureSearchEngineProvider();
 }
 
+void PrivateWindowSearchEngineProviderService::
+    ConfigurePrivateWindowSearchEngineProvider() {
+  auto* template_url = original_template_url_service_->GetTemplateURLForGUID(
+      private_search_provider_guid_.GetValue());
+  if (template_url) {
+    otr_template_url_service_->SetUserSelectedDefaultSearchProvider(
+        template_url);
+  }
+}
+
 void PrivateWindowSearchEngineProviderService::Shutdown() {
   SearchEngineProviderService::Shutdown();
   observation_.Reset();
+}
+
+void PrivateWindowSearchEngineProviderService::OnPreferenceChanged(
+    const std::string& pref_name) {
+  ConfigurePrivateWindowSearchEngineProvider();
 }

@@ -5,6 +5,8 @@
 
 #include "brave/browser/search_engines/search_engine_provider_service_factory.h"
 
+#include <string>
+
 #include "brave/browser/profiles/profile_util.h"
 #include "brave/browser/search_engines/guest_window_search_engine_provider_service.h"
 #include "brave/browser/search_engines/private_window_search_engine_provider_service.h"
@@ -101,11 +103,16 @@ SearchEngineProviderServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 
 void SearchEngineProviderServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kUseAlternativeSearchEngineProvider, false);
   registry->RegisterBooleanPref(kShowAlternativeSearchEngineProviderToggle,
                                 false);
   registry->RegisterBooleanPref(prefs::kDefaultSearchProviderByExtension,
                                 false);
+  registry->RegisterStringPref(prefs::kSyncedDefaultPrivateSearchProviderGUID,
+                               std::string(),
+                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#endif
   // Restore default behaviour for Android until we figure out if we want this
   // option there.
 #if BUILDFLAG(IS_ANDROID)

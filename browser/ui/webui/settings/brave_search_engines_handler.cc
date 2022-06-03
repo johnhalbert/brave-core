@@ -7,9 +7,44 @@
 
 #include <string>
 
+#include "base/bind.h"
+#include "base/values.h"
+#include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "components/search_engines/template_url.h"
+
 namespace settings {
 
 BraveSearchEnginesHandler::~BraveSearchEnginesHandler() = default;
+
+void BraveSearchEnginesHandler::RegisterMessages() {
+  SearchEnginesHandler::RegisterMessages();
+
+  web_ui()->RegisterMessageCallback(
+      "getPrivateSearchEnginesList",
+      base::BindRepeating(
+          &BraveSearchEnginesHandler::HandleGetPrivateSearchEnginesList,
+          base::Unretained(this)));
+}
+
+void BraveSearchEnginesHandler::HandleGetPrivateSearchEnginesList(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+  int last_default_engine_index =
+      list_controller_.table_model()->last_search_engine_index();
+  base::Value::List defaults;
+
+  for (int i = 0; i < last_default_engine_index; ++i) {
+    const TemplateURL* template_url = list_controller_.GetTemplateURL(i);
+    base::Value::Dict dict;
+    dict.Set("value", template_url->sync_guid());
+    dict.Set("name", template_url->short_name());
+    defaults.Append(std::move(dict));
+  }
+
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(defaults)));
+}
 
 std::unique_ptr<base::DictionaryValue>
 BraveSearchEnginesHandler::GetSearchEnginesList() {
