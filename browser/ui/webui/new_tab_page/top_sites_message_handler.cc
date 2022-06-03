@@ -349,11 +349,14 @@ void TopSitesMessageHandler::HandleAddNewTopSite(
   std::string title = args[1].GetString();
 
   // Stop adding if we can't make |url| valid.
-  if (!GetValidURLStringForTopSite(&url))
+  if (!GetValidURLStringForTopSite(&url)) {
+    LOG(ERROR) << "Invalid url" << url;
     return;
+  }
 
   // similar to `MostVisitedHandler::AddMostVisitedTile`
   if (most_visited_sites_->IsCustomLinksEnabled()) {
+    LOG(ERROR) << "Adding cusomt link: " << url;
     most_visited_sites_->AddCustomLink(GURL(url), base::UTF8ToUTF16(title));
   }
 }

@@ -8,7 +8,7 @@
 
 // Needs 12 items for our NTP top site tiles.
 #define kTopSitesNumber \
-  kTopSitesNumber = 12; \
+  kTopSitesNumber = 24; \
   static constexpr size_t kTopSitesNumber_Unused
 
 #include "src/components/history/core/browser/top_sites_impl.h"

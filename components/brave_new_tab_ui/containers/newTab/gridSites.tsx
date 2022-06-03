@@ -54,20 +54,20 @@ class TopSitesList extends React.PureComponent<Props, State> {
     // User can't change order in "Most Visited" mode
     // and they can't change position of super referral tiles
     if (this.props.gridSites[newIndex].defaultSRTopSite ||
-        !this.props.customLinksEnabled) {
+      !this.props.customLinksEnabled) {
       return
     }
     this.props.actions.tilesReordered(this.props.gridSites, oldIndex, newIndex)
   }
 
-  constructor (props: Props) {
+  constructor(props: Props) {
     super(props)
     this.state = {
       isDragging: false
     }
   }
 
-  render () {
+  render() {
     const { actions, gridSites, onShowEditTopSite, customLinksEnabled } = this.props
     const insertAddSiteTile = customLinksEnabled && gridSites.length < MAX_GRID_SIZE
     let maxGridSize = customLinksEnabled ? MAX_GRID_SIZE : (MAX_GRID_SIZE / 2)
@@ -85,48 +85,55 @@ class TopSitesList extends React.PureComponent<Props, State> {
       maxGridSize = Math.min(gridSites.length, maxGridSize)
     }
 
+    const pages = Math.floor(gridSites.length / maxGridSize) + 1;
+    console.log(`Pages: ${pages}, MaxGrid: ${maxGridSize}, Sites: ${gridSites.length}`);
+    const iterator: number[] = [];
+    for (let i = 0; i < pages; ++i) 
+      iterator.push(i);
+
     return (
-      <>
-        <DynamicList
-          blockNumber={maxGridSize}
-          updateBeforeSortStart={this.updateBeforeSortStart}
-          onSortEnd={this.onSortEnd}
-          axis='xy'
-          lockToContainerEdges={true}
-          lockOffset={'15%'}
-          // Ensure there is some movement from the user side before triggering the
-          // draggable handler. Otherwise click events will be swallowed since
-          // react-sortable-hoc works via mouseDown event.
-          // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
-          distance={2}
-        >
-          {
-            gridSites.slice(0, maxGridSize)
-              .map((siteData: NewTab.Site, index: number) => (
-                <GridSiteTile
-                  key={siteData.id}
-                  actions={actions}
-                  index={index}
-                  siteData={siteData}
-                  isDragging={this.state.isDragging}
-                  onShowEditTopSite={onShowEditTopSite}
-                  // User can't change order in "Most Visited" mode
-                  // and they can't change position of super referral tiles
-                  disabled={siteData.defaultSRTopSite || !this.props.customLinksEnabled}
-                />
-              ))
-          }
-          {
-            insertAddSiteTile &&
+      <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '596px', overflowX: 'auto', scrollbarWidth: 'none', scrollSnapAlign: 'start'}}>
+        {iterator.map((i) => <div key={i} style={{ scrollSnapAlign: 'start'}}>
+          <DynamicList
+            blockNumber={maxGridSize}
+            updateBeforeSortStart={this.updateBeforeSortStart}
+            onSortEnd={this.onSortEnd}
+            axis='xy'
+            lockToContainerEdges={true}
+            lockOffset={'15%'}
+            // Ensure there is some movement from the user side before triggering the
+            // draggable handler. Otherwise click events will be swallowed since
+            // react-sortable-hoc works via mouseDown event.
+            // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
+            distance={2}
+          >
+            {
+              gridSites.slice(0, maxGridSize)
+                .map((siteData: NewTab.Site, index: number) => (
+                  <GridSiteTile
+                    key={siteData.id}
+                    actions={actions}
+                    index={index}
+                    siteData={siteData}
+                    isDragging={this.state.isDragging}
+                    onShowEditTopSite={onShowEditTopSite}
+                    // User can't change order in "Most Visited" mode
+                    // and they can't change position of super referral tiles
+                    disabled={siteData.defaultSRTopSite || !this.props.customLinksEnabled}
+                  />
+                ))
+            }
+            {insertAddSiteTile}
             <AddSiteTile
               index={gridSites.length}
               disabled={true}
               isDragging={this.state.isDragging}
               showEditTopSite={onShowEditTopSite}
             />
-          }
-        </DynamicList>
-      </>
+
+          </DynamicList>
+        </div>)}
+      </div>
     )
   }
 }
