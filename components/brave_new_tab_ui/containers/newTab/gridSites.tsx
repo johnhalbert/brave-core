@@ -92,7 +92,7 @@ class TopSitesList extends React.PureComponent<Props, State> {
       iterator.push(i);
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '596px', overflowX: 'auto', scrollbarWidth: 'none', scrollSnapAlign: 'start'}}>
+      <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '596px', overflowX: 'auto', scrollbarWidth: 'none', scrollSnapType: 'x mandatory'}}>
         {iterator.map((i) => <div key={i} style={{ scrollSnapAlign: 'start'}}>
           <DynamicList
             blockNumber={maxGridSize}
