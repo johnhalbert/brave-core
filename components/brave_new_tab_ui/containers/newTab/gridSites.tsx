@@ -41,7 +41,7 @@ interface State {
 type DynamicListProps = SortableContainerProps & ListProps
 const DynamicList = SortableContainer((props: DynamicListProps) => {
   return <List {...props} />
-})
+}, { withRef: true })
 
 class TopSitesList extends React.PureComponent<Props, State> {
   updateBeforeSortStart = () => {
@@ -88,52 +88,54 @@ class TopSitesList extends React.PureComponent<Props, State> {
     const pages = Math.floor(gridSites.length / maxGridSize) + 1;
     console.log(`Pages: ${pages}, MaxGrid: ${maxGridSize}, Sites: ${gridSites.length}`);
     const iterator: number[] = [];
-    for (let i = 0; i < pages; ++i) 
+    for (let i = 0; i < pages; ++i)
       iterator.push(i);
 
+    // Current theory:
+    // Either:
+    // 1. Sort the items how they're displayed, in a two row, infinite column
+    // layout
+    // 2. Multiple pages, use dndkit.
     return (
-      <div style={{ display: 'flex', flexDirection: 'row', maxWidth: '596px', overflowX: 'auto', scrollbarWidth: 'none', scrollSnapType: 'x mandatory'}}>
-        {iterator.map((i) => <div key={i} style={{ scrollSnapAlign: 'start'}}>
-          <DynamicList
-            blockNumber={maxGridSize}
-            updateBeforeSortStart={this.updateBeforeSortStart}
-            onSortEnd={this.onSortEnd}
-            axis='xy'
-            lockToContainerEdges={true}
-            lockOffset={'15%'}
-            // Ensure there is some movement from the user side before triggering the
-            // draggable handler. Otherwise click events will be swallowed since
-            // react-sortable-hoc works via mouseDown event.
-            // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
-            distance={2}
-          >
-            {
-              gridSites.slice(0, maxGridSize)
-                .map((siteData: NewTab.Site, index: number) => (
-                  <GridSiteTile
-                    key={siteData.id}
-                    actions={actions}
-                    index={index}
-                    siteData={siteData}
-                    isDragging={this.state.isDragging}
-                    onShowEditTopSite={onShowEditTopSite}
-                    // User can't change order in "Most Visited" mode
-                    // and they can't change position of super referral tiles
-                    disabled={siteData.defaultSRTopSite || !this.props.customLinksEnabled}
-                  />
-                ))
-            }
-            {insertAddSiteTile}
-            <AddSiteTile
-              index={gridSites.length}
-              disabled={true}
-              isDragging={this.state.isDragging}
-              showEditTopSite={onShowEditTopSite}
-            />
+      <DynamicList
+        blockNumber={maxGridSize}
+        updateBeforeSortStart={this.updateBeforeSortStart}
+        onSortEnd={this.onSortEnd}
+        axis='xy'
+        lockToContainerEdges={true}
+        lockOffset={'15%'}
+        // Ensure there is some movement from the user side before triggering the
+        // draggable handler. Otherwise click events will be swallowed since
+        // react-sortable-hoc works via mouseDown event.
+        // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
+        distance={2}
+      >
+        
+        {
+          gridSites
+            .map((siteData: NewTab.Site, index: number) => (
+              <GridSiteTile
+                key={siteData.id}
+                actions={actions}
+                index={index}
+                siteData={siteData}
+                isDragging={this.state.isDragging}
+                onShowEditTopSite={onShowEditTopSite}
+                // User can't change order in "Most Visited" mode
+                // and they can't change position of super referral tiles
+                disabled={siteData.defaultSRTopSite || !this.props.customLinksEnabled}
+              />
+            ))
+        }
+        {insertAddSiteTile}
+        <AddSiteTile
+          index={gridSites.length}
+          disabled={true}
+          isDragging={this.state.isDragging}
+          showEditTopSite={onShowEditTopSite}
+        />
 
-          </DynamicList>
-        </div>)}
-      </div>
+      </DynamicList>
     )
   }
 }

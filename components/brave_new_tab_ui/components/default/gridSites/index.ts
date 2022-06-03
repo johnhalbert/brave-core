@@ -5,7 +5,7 @@
 
 import styled, { css } from 'styled-components'
 
-export const TileTitle = styled('p')<{}>`
+export const TileTitle = styled('p') <{}>`
   margin: 0;
   font-family: Poppins;
   font-weight: 400;
@@ -20,7 +20,7 @@ export const TileTitle = styled('p')<{}>`
   text-overflow: ellipsis;
 `
 
-export const AddSiteTileImage = styled('div')<{}>`
+export const AddSiteTileImage = styled('div') <{}>`
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(8px);
   border-radius: 8px;
@@ -40,7 +40,7 @@ export interface AddSiteTileProps {
   isDragging: boolean
 }
 
-export const AddSiteTile = styled('button')<AddSiteTileProps>`
+export const AddSiteTile = styled('button') <AddSiteTileProps>`
   background: transparent;
   width: 78px;
   height: 110px;
@@ -76,25 +76,23 @@ export interface ListProps {
   blockNumber: number
 }
 
-export const List = styled('div')<ListProps>`
-  justify-self: start;
-  align-items: normal;
+export const List = styled('div') <ListProps>`
   height: 100%;
-  display: grid;
-  grid-template-columns: repeat(${p => Math.min(p.blockNumber, 6).toString()}, 86px);
-  justify-content: var(--ntp-item-justify, start);
   padding: 24px 56px 24px 24px;
+  justify-self: start;
+  width: 596px;
+  
+  display: grid;
+  align-items: normal;
+  justify-content: var(--ntp-item-justify, start);
 
-  @media screen and (max-width: 700px) {
-    grid-template-columns: repeat(${p => Math.min(p.blockNumber, 3).toString()}, 86px);
-  }
+  grid-template-rows: repeat(2, 86px);
+  grid-auto-flow: column;
 
-  @media screen and (max-width: 390px) {
-    grid-template-columns: repeat(${p => Math.min(p.blockNumber, 2).toString()}, 86px);
-  }
+  scroll-snap-type: x mandatory;
 `
 
-export const TileActionsContainer = styled('nav')<{}>`
+export const TileActionsContainer = styled('nav') <{}>`
   box-sizing: border-box;
   opacity: 0;
   visibility: hidden;
@@ -108,7 +106,7 @@ export const TileActionsContainer = styled('nav')<{}>`
   display: flex;
 `
 
-export const TileMenu = styled('div')<{}>`
+export const TileMenu = styled('div') <{}>`
   position: absolute;
   top: 15px;
   left: 80px;
@@ -127,7 +125,7 @@ export const TileMenu = styled('div')<{}>`
   }
 `
 
-export const TileMenuItem = styled('button')<{}>`
+export const TileMenuItem = styled('button') <{}>`
   width: 100%;
   height: 30px;
   font-family: Poppins;
@@ -155,7 +153,7 @@ export const TileMenuItem = styled('button')<{}>`
   }
 `
 
-export const TileAction = styled('button')<{}>`
+export const TileAction = styled('button') <{}>`
   -webkit-appearance: none;
   box-sizing: border-box;
   transition: color 0.1s linear;
@@ -182,7 +180,7 @@ export const TileAction = styled('button')<{}>`
   }
 `
 
-export const TileFavicon = styled('img')<{}>`
+export const TileFavicon = styled('img') <{}>`
   display: block;
   padding: 16px;
   width: 70px;
@@ -202,7 +200,7 @@ interface TileProps {
   isMenuShowing: boolean
 }
 
-export const Tile = styled('a')<TileProps>`
+export const Tile = styled('a') <TileProps>`
   position: relative;
   text-decoration: none;
   display: flex;
