@@ -53,7 +53,8 @@ void VPNPanelHandler::ShowUI() {
   DCHECK(vpn_service);
   if (embedder) {
     embedder->ShowUI();
-    vpn_service->LoadPurchasedState();
+    if (!vpn_service->is_connected())
+      vpn_service->LoadPurchasedState();
   }
 }
 

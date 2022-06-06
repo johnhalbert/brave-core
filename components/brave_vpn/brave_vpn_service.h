@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "brave/components/api_request_helper/api_request_helper.h"
 #include "brave/components/brave_vpn/mojom/brave_vpn.mojom.h"
 #include "brave/components/skus/common/skus_sdk.mojom.h"
@@ -279,6 +280,7 @@ class BraveVpnService :
       skus_service_getter_;
   mojo::Remote<skus::mojom::SkusService> skus_service_;
   mojom::PurchasedState purchased_state_ = mojom::PurchasedState::NOT_PURCHASED;
+  base::TimeTicks last_purchased_status_time_;
   mojo::RemoteSet<mojom::ServiceObserver> observers_;
   api_request_helper::APIRequestHelper api_request_helper_;
   std::string skus_credential_;

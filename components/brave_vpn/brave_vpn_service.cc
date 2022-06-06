@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "brave/components/skus/browser/skus_utils.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/parsed_cookie.h"
@@ -50,6 +51,8 @@ constexpr char kCredential[] = "api/v1.3/device/";
 constexpr char kVerifyPurchaseToken[] = "api/v1.1/verify-purchase-token";
 constexpr char kCreateSubscriberCredentialV12[] =
     "api/v1.2/subscriber-credential/create";
+// Time delta for caching purchased state between checking new state.
+constexpr int kPurchaseCacheExpirationInSeconds = 4;
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("brave_vpn_service", R"(
@@ -884,7 +887,10 @@ void BraveVpnService::LoadPurchasedState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (purchased_state_ == PurchasedState::LOADING)
     return;
-
+  base::TimeDelta delta = base::TimeTicks::Now() - last_purchased_status_time_;
+  if (delta < base::Seconds(kPurchaseCacheExpirationInSeconds))
+    return;
+  last_purchased_status_time_ = base::TimeTicks::Now();
   SetPurchasedState(PurchasedState::LOADING);
 
 #if !BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
