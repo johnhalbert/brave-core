@@ -24,6 +24,8 @@ extern const base::Feature kBraveRewards;
 extern const base::Feature kGeminiFeature;
 #endif
 
+extern const base::Feature kUseExtensionFeature;
+
 extern const base::Feature kVerboseLoggingFeature;
 
 }  // namespace features

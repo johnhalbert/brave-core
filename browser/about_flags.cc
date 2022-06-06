@@ -220,6 +220,11 @@ constexpr char kBraveRewardsGeminiDescription[] =
     "Enables support for Gemini as an external wallet provider for Brave";
 #endif
 
+constexpr char kBraveRewardsUseExtensionName[] = "Use the Rewards extension";
+constexpr char kBraveRewardsUseExtensionDescription[] =
+    "When enabled, the Brave Rewards built-in extension will be used to "
+    "implement Rewards features.";
+
 constexpr char kBraveRewardsVerboseLoggingName[] =
     "Enable Brave Rewards verbose logging";
 constexpr char kBraveRewardsVerboseLoggingDescription[] =
@@ -543,6 +548,11 @@ const flags_ui::FeatureEntry::Choice kBraveSkusEnvChoices[] = {
      flag_descriptions::kBraveFirstPartyEphemeralStorageDescription,        \
      kOsAll,                                                                \
      FEATURE_VALUE_TYPE(net::features::kBraveFirstPartyEphemeralStorage)},  \
+    {"brave-rewards-use-extension",                                         \
+     flag_descriptions::kBraveRewardsUseExtensionName,                      \
+     flag_descriptions::kBraveRewardsUseExtensionDescription,               \
+     kOsDesktop,                                                            \
+     FEATURE_VALUE_TYPE(brave_rewards::features::kUseExtensionFeature)},    \
     {"brave-rewards-verbose-logging",                                       \
      flag_descriptions::kBraveRewardsVerboseLoggingName,                    \
      flag_descriptions::kBraveRewardsVerboseLoggingDescription,             \

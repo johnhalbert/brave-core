@@ -26,6 +26,9 @@ const base::Feature kGeminiFeature{"BraveRewardsGemini",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kUseExtensionFeature{"BraveRewardsUseExtension",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kVerboseLoggingFeature{"BraveRewardsVerboseLogging",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 

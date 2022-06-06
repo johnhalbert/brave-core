@@ -27,4 +27,6 @@ transpile_web_ui("brave_rewards_panel") {
   extra_relative_path = "/brave_rewards/out"
 
   public_asset_path = "/out/"
+
+  deps = [ "//brave/components/brave_rewards/common:mojom_js" ]
 }
