@@ -13,6 +13,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/prefs/pref_service.h"
 #include "gmock/gmock.h"
@@ -50,13 +51,13 @@ class BraveBookmarkProviderTest : public testing::Test {
 };
 
 TEST_F(BraveBookmarkProviderTest, SuggestionsDisabledNoResults) {
-  prefs()->SetBoolean(kBookmarkSuggestionsEnabled, false);
+  prefs()->SetBoolean(omnibox::kBookmarkSuggestionsEnabled, false);
   provider_->Start(CreateAutocompleteInput("Hello"), true);
   EXPECT_TRUE(provider_->matches().empty());
 }
 
 TEST_F(BraveBookmarkProviderTest, SuggestionsEnabledHasResults) {
-  prefs()->SetBoolean(kBookmarkSuggestionsEnabled, true);
+  prefs()->SetBoolean(omnibox::kBookmarkSuggestionsEnabled, true);
   provider_->Start(CreateAutocompleteInput("Hello"), true);
   EXPECT_FALSE(provider_->matches().empty());
 }

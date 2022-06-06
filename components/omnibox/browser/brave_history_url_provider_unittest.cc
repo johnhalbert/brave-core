@@ -32,6 +32,7 @@
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -89,8 +90,8 @@ class BraveHistoryURLProviderTest : public testing::Test,
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     auto* registry =
         static_cast<TestingPrefServiceSimple*>(client_->GetPrefs())->registry();
-    registry->RegisterBooleanPref(kHistorySuggestionsEnabled, true);
-    registry->RegisterBooleanPref(kBookmarkSuggestionsEnabled, true);
+    registry->RegisterBooleanPref(omnibox::kHistorySuggestionsEnabled, true);
+    registry->RegisterBooleanPref(omnibox::kBookmarkSuggestionsEnabled, true);
 
     CHECK(history_dir_.CreateUniqueTempDir());
     client_->set_history_service(history::CreateHistoryService(

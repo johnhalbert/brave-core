@@ -15,6 +15,7 @@
 #include "brave/components/constants/pref_names.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/history_provider.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 
 // As from autocomplete_provider.h:
@@ -30,7 +31,7 @@ void TopSitesProvider::Start(const AutocompleteInput& input,
                             bool minimal_changes) {
   matches_.clear();
   auto* prefs = client_->GetPrefs();
-  if (!prefs || !prefs->GetBoolean(kTopSiteSuggestionsEnabled)) {
+  if (!prefs || !prefs->GetBoolean(omnibox::kTopSiteSuggestionsEnabled)) {
     return;
   }
 

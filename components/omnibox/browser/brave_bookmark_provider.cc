@@ -7,6 +7,7 @@
 #include "brave/components/constants/pref_names.h"
 #include "brave/components/omnibox/browser/brave_history_quick_provider.h"
 #include "components/omnibox/browser/bookmark_provider.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 
 BraveBookmarkProvider::BraveBookmarkProvider(AutocompleteProviderClient* client)
@@ -16,7 +17,7 @@ BraveBookmarkProvider::~BraveBookmarkProvider() = default;
 
 void BraveBookmarkProvider::Start(const AutocompleteInput& input,
                                   bool minimal_changes) {
-  if (!client_->GetPrefs()->GetBoolean(kBookmarkSuggestionsEnabled)) {
+  if (!client_->GetPrefs()->GetBoolean(omnibox::kBookmarkSuggestionsEnabled)) {
     matches_.clear();
     return;
   }

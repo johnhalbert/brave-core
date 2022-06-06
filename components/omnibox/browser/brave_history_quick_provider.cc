@@ -20,7 +20,7 @@ BraveHistoryQuickProvider::~BraveHistoryQuickProvider() = default;
 
 void BraveHistoryQuickProvider::Start(const AutocompleteInput& input,
                                       bool minimal_changes) {
-  if (!client()->GetPrefs()->GetBoolean(kHistorySuggestionsEnabled)) {
+  if (!client()->GetPrefs()->GetBoolean(omnibox::kHistorySuggestionsEnabled)) {
     matches_.clear();
     return;
   }
