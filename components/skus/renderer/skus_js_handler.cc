@@ -164,6 +164,14 @@ void SkusJSHandler::OnRefreshOrder(
 
   v8::Local<v8::Promise::Resolver> resolver = promise_resolver.Get(isolate);
 
+  if (!response.length()) {
+    v8::Local<v8::String> result =
+        v8::String::NewFromUtf8(isolate, "Received empty response")
+            .ToLocalChecked();
+    std::ignore = resolver->Reject(context, result);
+    return;
+  }
+
   base::JSONReader::ValueWithError value_with_error =
       base::JSONReader::ReadAndReturnValueWithError(
           response, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
@@ -321,6 +329,14 @@ void SkusJSHandler::OnCredentialSummary(
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   v8::Local<v8::Promise::Resolver> resolver = promise_resolver.Get(isolate);
+
+  if (!response.length()) {
+    v8::Local<v8::String> result =
+        v8::String::NewFromUtf8(isolate, "Received empty response")
+            .ToLocalChecked();
+    std::ignore = resolver->Reject(context, result);
+    return;
+  }
 
   base::JSONReader::ValueWithError value_with_error =
       base::JSONReader::ReadAndReturnValueWithError(
