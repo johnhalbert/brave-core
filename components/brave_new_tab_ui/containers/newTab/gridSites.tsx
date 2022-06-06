@@ -96,48 +96,54 @@ class TopSitesList extends React.PureComponent<Props, State> {
     // 1. Sort the items how they're displayed, in a two row, infinite column
     // layout
     // 2. Multiple pages, use dndkit.
-    return (<ListPagination>
-      {iterator.map(page => <DynamicList
-        blockNumber={maxGridSize}
-        updateBeforeSortStart={this.updateBeforeSortStart}
-        onSortEnd={this.onSortEnd}
-        axis='xy'
-        lockToContainerEdges={true}
-        lockOffset={'15%'}
-        // Ensure there is some movement from the user side before triggering the
-        // draggable handler. Otherwise click events will be swallowed since
-        // react-sortable-hoc works via mouseDown event.
-        // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
-        distance={2}
-      >
+    return <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <ListPagination>
+        {iterator.map(page => <DynamicList
+          blockNumber={maxGridSize}
+          updateBeforeSortStart={this.updateBeforeSortStart}
+          onSortEnd={this.onSortEnd}
+          axis='xy'
+          lockToContainerEdges={true}
+          lockOffset={'15%'}
+          // Ensure there is some movement from the user side before triggering the
+          // draggable handler. Otherwise click events will be swallowed since
+          // react-sortable-hoc works via mouseDown event.
+          // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
+          distance={2}
+        >
 
-        {
-          gridSites.slice(page, page+maxGridSize)
-            .map((siteData: NewTab.Site, index: number) => (
-              <GridSiteTile
-                key={siteData.id}
-                actions={actions}
-                index={index}
-                siteData={siteData}
-                isDragging={this.state.isDragging}
-                onShowEditTopSite={onShowEditTopSite}
-                // User can't change order in "Most Visited" mode
-                // and they can't change position of super referral tiles
-                disabled={siteData.defaultSRTopSite || !this.props.customLinksEnabled}
-              />
-            ))
-        }
-        {insertAddSiteTile}
-        <AddSiteTile
-          index={gridSites.length}
-          disabled={true}
-          isDragging={this.state.isDragging}
-          showEditTopSite={onShowEditTopSite}
-        />
+          {
+            gridSites.slice(page, page + maxGridSize)
+              .map((siteData: NewTab.Site, index: number) => (
+                <GridSiteTile
+                  key={siteData.id}
+                  actions={actions}
+                  index={index}
+                  siteData={siteData}
+                  isDragging={this.state.isDragging}
+                  onShowEditTopSite={onShowEditTopSite}
+                  // User can't change order in "Most Visited" mode
+                  // and they can't change position of super referral tiles
+                  disabled={siteData.defaultSRTopSite || !this.props.customLinksEnabled}
+                />
+              ))
+          }
+          {insertAddSiteTile}
+          <AddSiteTile
+            index={gridSites.length}
+            disabled={true}
+            isDragging={this.state.isDragging}
+            showEditTopSite={onShowEditTopSite}
+          />
 
-      </DynamicList>)}
-    </ListPagination>
-    )
+        </DynamicList>)}
+      </ListPagination>
+      <div>
+          <button>()</button>
+          <button>()</button>
+          <button>()</button>
+      </div>
+    </div>
   }
 }
 
