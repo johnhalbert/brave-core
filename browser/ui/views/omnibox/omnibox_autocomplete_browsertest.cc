@@ -61,11 +61,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, AutocompleteDisabledTest) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, TopSiteSuggestionsEnabledTest) {
   EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(kTopSiteSuggestionsEnabled));
+      browser()->profile()->GetPrefs()->GetBoolean(omnibox::kTopSiteSuggestionsEnabled));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest,
                        BraveSuggestedSiteSuggestionsEnabledTest) {
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      kBraveSuggestedSiteSuggestionsEnabled));
+      omnibox::kBraveSuggestedSiteSuggestionsEnabled));
 }
