@@ -89,7 +89,21 @@ export const List = styled('div') <ListProps>`
   grid-template-rows: repeat(2, 86px);
   grid-auto-flow: column;
 
+  scroll-snap-align: start;
+`
+
+export const ListPagination = styled('div')<{}>`
+  display: flex;
+  flex-direction: row;
+
+  max-width: 596px;
+  overflow-x: auto;
+
   scroll-snap-type: x mandatory;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 export const TileActionsContainer = styled('nav') <{}>`

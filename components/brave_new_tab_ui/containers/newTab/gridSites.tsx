@@ -13,7 +13,7 @@ import {
 } from 'react-sortable-hoc'
 
 // Feature-specific components
-import { List, ListProps } from '../../components/default/gridSites'
+import { List, ListPagination, ListProps } from '../../components/default/gridSites'
 import createWidget from '../../components/default/widget'
 
 // Component groups
@@ -96,8 +96,8 @@ class TopSitesList extends React.PureComponent<Props, State> {
     // 1. Sort the items how they're displayed, in a two row, infinite column
     // layout
     // 2. Multiple pages, use dndkit.
-    return (
-      <DynamicList
+    return (<ListPagination>
+      {iterator.map(page => <DynamicList
         blockNumber={maxGridSize}
         updateBeforeSortStart={this.updateBeforeSortStart}
         onSortEnd={this.onSortEnd}
@@ -110,9 +110,9 @@ class TopSitesList extends React.PureComponent<Props, State> {
         // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
         distance={2}
       >
-        
+
         {
-          gridSites
+          gridSites.slice(page, page+maxGridSize)
             .map((siteData: NewTab.Site, index: number) => (
               <GridSiteTile
                 key={siteData.id}
@@ -135,7 +135,8 @@ class TopSitesList extends React.PureComponent<Props, State> {
           showEditTopSite={onShowEditTopSite}
         />
 
-      </DynamicList>
+      </DynamicList>)}
+    </ListPagination>
     )
   }
 }
