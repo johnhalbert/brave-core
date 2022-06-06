@@ -9,13 +9,14 @@
 class BraveHistoryURLProviderTest;
 class BraveHistoryQuickProviderTest;
 
-#define BRAVE_HISTORY_SERVICE_H               \
- private:                                     \
-  friend class ::BraveHistoryURLProviderTest; \
-  friend class ::BraveHistoryQuickProviderTest;
+#define Cleanup                                 \
+  Cleanup();                                    \
+  friend class ::BraveHistoryURLProviderTest;   \
+  friend class ::BraveHistoryQuickProviderTest; \
+  void CleanupUnused
 
 #include "src/components/history/core/browser/history_service.h"
 
-#undef BRAVE_HISTORY_SERVICE_H
+#undef Cleanup
 
 #endif  // BRAVE_CHROMIUM_SRC_COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_SERVICE_H_

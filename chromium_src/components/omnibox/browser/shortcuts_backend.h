@@ -6,12 +6,13 @@
 #ifndef BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_BACKEND_H_
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_BACKEND_H_
 
-#define BRAVE_SHORTCUTS_BACKEND_H \
- private:                         \
-  friend class BraveShortcutsProviderTest;
+#define InitInternal                       \
+  InitInternal();                          \
+  friend class BraveShortcutsProviderTest; \
+  void InitInternalUnused
 
 #include "src/components/omnibox/browser/shortcuts_backend.h"
 
-#undef BRAVE_SHORTCUTS_BACKEND_H
+#undef InitInternal
 
 #endif  // BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_BACKEND_H_

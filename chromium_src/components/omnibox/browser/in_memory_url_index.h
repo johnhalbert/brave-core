@@ -8,12 +8,13 @@
 
 class BraveHistoryQuickProviderTest;
 
-#define BRAVE_IN_MEMORY_URL_INDEX_H \
- private:                           \
-  friend class ::BraveHistoryQuickProviderTest;
+#define ClearPrivateData                        \
+  ClearPrivateData();                           \
+  friend class ::BraveHistoryQuickProviderTest; \
+  void ClearPrivateDataUnused
 
 #include "src/components/omnibox/browser/in_memory_url_index.h"
 
-#undef BRAVE_IN_MEMORY_URL_INDEX_H
+#undef ClearPrivateData
 
 #endif  // BRAVE_CHROMIUM_SRC_COMPONENTS_OMNIBOX_BROWSER_IN_MEMORY_URL_INDEX_H_
