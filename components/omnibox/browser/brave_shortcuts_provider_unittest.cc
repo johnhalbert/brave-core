@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
@@ -92,13 +93,13 @@ class BraveShortcutsProviderTest : public testing::Test {
 };
 
 TEST_F(BraveShortcutsProviderTest, SuggestionsDisabledNoResults) {
-  prefs()->SetBoolean(kHistorySuggestionsEnabled, false);
+  prefs()->SetBoolean(omnibox::kHistorySuggestionsEnabled, false);
   provider_->Start(CreateAutocompleteInput("hel"), true);
   EXPECT_TRUE(provider_->matches().empty());
 }
 
 TEST_F(BraveShortcutsProviderTest, SuggestionsEnabledHasResults) {
-  prefs()->SetBoolean(kHistorySuggestionsEnabled, true);
+  prefs()->SetBoolean(omnibox::kHistorySuggestionsEnabled, true);
   provider_->Start(CreateAutocompleteInput("hel"), true);
   EXPECT_FALSE(provider_->matches().empty());
 }

@@ -43,6 +43,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -203,7 +204,7 @@ class BraveSearchProviderTest : public testing::Test {
 // ---------------------------------------------------------------
 
 TEST_F(BraveSearchProviderTest, SearchIncludesHistoryWhenHistoryEnabled) {
-  profile_->GetPrefs()->SetBoolean(kHistorySuggestionsEnabled, true);
+  profile_->GetPrefs()->SetBoolean(omnibox::kHistorySuggestionsEnabled, true);
 
   GURL term_url_a(AddSearchToHistory(default_t_url_, u"hello", 1));
   profile_->BlockUntilHistoryProcessesPendingRequests();
@@ -215,7 +216,7 @@ TEST_F(BraveSearchProviderTest, SearchIncludesHistoryWhenHistoryEnabled) {
 
 TEST_F(BraveSearchProviderTest,
        SearchDoesNotIncludeHistoryWhenHistoryDisabled) {
-  profile_->GetPrefs()->SetBoolean(kHistorySuggestionsEnabled, false);
+  profile_->GetPrefs()->SetBoolean(omnibox::kHistorySuggestionsEnabled, false);
 
   GURL term_url_a(AddSearchToHistory(default_t_url_, u"hello", 1));
   profile_->BlockUntilHistoryProcessesPendingRequests();

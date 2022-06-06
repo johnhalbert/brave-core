@@ -120,7 +120,7 @@ class BraveHistoryURLProviderTest : public testing::Test,
 };
 
 TEST_F(BraveHistoryURLProviderTest, NoResultsWhenHistoryDisabled) {
-  client_->GetPrefs()->SetBoolean(kHistorySuggestionsEnabled, false);
+  client_->GetPrefs()->SetBoolean(omnibox::kHistorySuggestionsEnabled, false);
 
   autocomplete_->Start(CreateAutocompleteInput("Example"), false);
   if (!autocomplete_->done())
@@ -129,7 +129,7 @@ TEST_F(BraveHistoryURLProviderTest, NoResultsWhenHistoryDisabled) {
 }
 
 TEST_F(BraveHistoryURLProviderTest, ResultsWhenHistorySuggestionsEnabled) {
-  client_->GetPrefs()->SetBoolean(kHistorySuggestionsEnabled, true);
+  client_->GetPrefs()->SetBoolean(omnibox::kHistorySuggestionsEnabled, true);
 
   autocomplete_->Start(CreateAutocompleteInput("Example"), false);
   if (!autocomplete_->done())
@@ -138,7 +138,7 @@ TEST_F(BraveHistoryURLProviderTest, ResultsWhenHistorySuggestionsEnabled) {
 }
 
 TEST_F(BraveHistoryURLProviderTest, URLResultsWhenHistoryDisabled) {
-  client_->GetPrefs()->SetBoolean(kHistorySuggestionsEnabled, false);
+  client_->GetPrefs()->SetBoolean(omnibox::kHistorySuggestionsEnabled, false);
 
   autocomplete_->Start(CreateAutocompleteInput("https://unvisited-url.com/"),
                        false);
