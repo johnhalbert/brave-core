@@ -92,7 +92,13 @@ export const List = styled('div') <ListProps>`
   scroll-snap-align: start;
 `
 
-export const ListPagination = styled('div')<{}>`
+export const PagesContainer = styled('div') <{}>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+export const ListPagination = styled('div') <{}>`
   display: flex;
   flex-direction: row;
 
@@ -104,6 +110,24 @@ export const ListPagination = styled('div')<{}>`
   ::-webkit-scrollbar {
     display: none;
   }
+`
+
+export const ListPageButtonContainer = styled('div')<{}>`
+  display: flex;
+  flex-direction: row;
+
+  --list-page-button-size: 8px;
+  gap: var(--list-page-button-size);
+`
+
+export const ListPageButton = styled('button') <{}>`
+  all: unset;
+
+  color: #ffffff;
+  opacity: 0.5;
+
+  width: var(--list-page-button-size);
+  height: var(--list-page-button-size);
 `
 
 export const TileActionsContainer = styled('nav') <{}>`

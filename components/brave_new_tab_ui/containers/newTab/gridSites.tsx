@@ -13,7 +13,7 @@ import {
 } from 'react-sortable-hoc'
 
 // Feature-specific components
-import { List, ListPagination, ListProps } from '../../components/default/gridSites'
+import { List, ListPageButton, ListPageButtonContainer, ListPagination, ListProps, PagesContainer } from '../../components/default/gridSites'
 import createWidget from '../../components/default/widget'
 
 // Component groups
@@ -96,9 +96,10 @@ class TopSitesList extends React.PureComponent<Props, State> {
     // 1. Sort the items how they're displayed, in a two row, infinite column
     // layout
     // 2. Multiple pages, use dndkit.
-    return <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <ListPagination>
+    return <PagesContainer>
+      <ListPagination ref={this.pagesListRef}>
         {iterator.map(page => <DynamicList
+          key={page}
           blockNumber={maxGridSize}
           updateBeforeSortStart={this.updateBeforeSortStart}
           onSortEnd={this.onSortEnd}
@@ -138,12 +139,14 @@ class TopSitesList extends React.PureComponent<Props, State> {
 
         </DynamicList>)}
       </ListPagination>
-      <div>
-          <button>()</button>
-          <button>()</button>
-          <button>()</button>
-      </div>
-    </div>
+      <ListPageButtonContainer>
+        {iterator.map(page => <ListPageButton key={page} onClick={e => console.log(e) /*this.pagesListRef.current?.children[page].scrollIntoView()*/}>
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" />
+          </svg>
+        </ListPageButton>)}
+      </ListPageButtonContainer>
+    </PagesContainer>
   }
 }
 
