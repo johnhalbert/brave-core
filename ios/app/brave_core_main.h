@@ -10,6 +10,7 @@
 
 @class BraveBookmarksAPI;
 @class BraveHistoryAPI;
+@class BraveFavIconLoader;
 @class BravePasswordAPI;
 @class BraveSyncAPI;
 @class BraveSyncProfileServiceIOS;
@@ -61,6 +62,8 @@ OBJC_EXPORT
 @property(nonatomic, readonly) BraveSyncProfileServiceIOS* syncProfileService;
 
 @property(nonatomic, readonly) BravePasswordAPI* passwordAPI;
+
+@property(nonatomic, readonly) BraveFavIconLoader* favIconLoader;
 
 + (void)setLogHandler:(nullable BraveCoreLogHandler)logHandler;
 

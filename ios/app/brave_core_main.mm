@@ -200,6 +200,7 @@ const BraveCoreSwitch BraveCoreSwitchSkusEnvironment =
   _passwordAPI = nil;
   _syncProfileService = nil;
   _syncAPI = nil;
+  _favIconLoader = nil;
 
   _mainBrowserState = nullptr;
   _webMain.reset();
