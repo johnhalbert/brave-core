@@ -106,22 +106,6 @@ export const ListPageButtonContainer = styled('div')<{}>`
   gap: var(--list-page-button-size);
 `
 
-export const ListPageButton = styled('button') <{}>`
-  all: unset;
-
-  cursor: pointer;
-
-  color: #ffffff;
-  opacity: 0.5;
-
-  :hover {
-    opacity: 0.8
-  }
-
-  width: var(--list-page-button-size);
-  height: var(--list-page-button-size);
-`
-
 export const TileActionsContainer = styled('nav') <{}>`
   box-sizing: border-box;
   opacity: 0;

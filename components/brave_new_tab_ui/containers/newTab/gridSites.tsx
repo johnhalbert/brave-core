@@ -13,7 +13,7 @@ import {
 } from 'react-sortable-hoc'
 
 // Feature-specific components
-import { List, ListPageButton, ListPageButtonContainer, ListProps, PagesContainer } from '../../components/default/gridSites'
+import { List, ListPageButtonContainer, ListProps, PagesContainer } from '../../components/default/gridSites'
 import createWidget from '../../components/default/widget'
 
 // Component groups
@@ -28,6 +28,7 @@ import * as newTabActions from '../../actions/new_tab_actions'
 import * as gridSitesActions from '../../actions/grid_sites_actions'
 import { useState, useCallback, useRef } from 'react'
 import { GridPagesContainer } from '../../components/default/gridSites/gridPagesContainer'
+import GridPageButton from '../../components/default/gridSites/gridPageButton'
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -130,11 +131,7 @@ function TopSitesList(props: Props) {
       </DynamicList>)}
     </GridPagesContainer>
     <ListPageButtonContainer>
-      {iterator.map(page => <ListPageButton key={page} onClick={e => gridPagesContainerRef.current?.children[page].scrollIntoView({ behavior: 'smooth' })}>
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="50" />
-        </svg>
-      </ListPageButton>)}
+      {iterator.map(page => <GridPageButton page={page} pageContainerRef={gridPagesContainerRef} />)}
     </ListPageButtonContainer>
   </PagesContainer>;
 }
