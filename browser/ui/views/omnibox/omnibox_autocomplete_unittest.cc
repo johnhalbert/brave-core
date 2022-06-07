@@ -14,8 +14,8 @@
 class OmniboxAutocompleteUnitTest : public testing::Test {
  public:
   OmniboxAutocompleteUnitTest() {
-      pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-      brave::RegisterOmniboxProfilePrefs(pref_service_->registry());
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    brave::RegisterOmniboxProfilePrefs(pref_service_->registry());
   }
 
   PrefService* prefs() { return pref_service_.get(); }
@@ -24,13 +24,11 @@ class OmniboxAutocompleteUnitTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 
-TEST_F(OmniboxAutocompleteUnitTest,
-                       TopSiteSuggestionsEnabledTest) {
-  EXPECT_TRUE(prefs()->GetBoolean(
-      omnibox::kTopSiteSuggestionsEnabled));
+TEST_F(OmniboxAutocompleteUnitTest, TopSiteSuggestionsEnabledTest) {
+  EXPECT_TRUE(prefs()->GetBoolean(omnibox::kTopSiteSuggestionsEnabled));
 }
 
 TEST_F(OmniboxAutocompleteUnitTest, BraveSuggestedSiteSuggestionsEnabledTest) {
-  EXPECT_FALSE(prefs()->GetBoolean(
-      omnibox::kBraveSuggestedSiteSuggestionsEnabled));
+  EXPECT_FALSE(
+      prefs()->GetBoolean(omnibox::kBraveSuggestedSiteSuggestionsEnabled));
 }

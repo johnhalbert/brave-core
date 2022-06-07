@@ -176,7 +176,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(brave_rewards::prefs::kHideButton, false);
 }
 
-void RegisterOmniboxProfilePrefs(PrefRegistrySimple *registry) {
+void RegisterOmniboxProfilePrefs(PrefRegistrySimple* registry) {
   // Autocomplete in address bar
   registry->RegisterBooleanPref(omnibox::kAutocompleteEnabled, true);
   registry->RegisterBooleanPref(omnibox::kTopSiteSuggestionsEnabled, true);
@@ -184,7 +184,6 @@ void RegisterOmniboxProfilePrefs(PrefRegistrySimple *registry) {
                                 false);
   registry->RegisterBooleanPref(omnibox::kHistorySuggestionsEnabled, true);
   registry->RegisterBooleanPref(omnibox::kBookmarkSuggestionsEnabled, true);
-
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
