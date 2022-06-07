@@ -86,8 +86,8 @@ export const List = styled('div') <ListProps>`
   align-items: normal;
   justify-content: var(--ntp-item-justify, start);
 
-  grid-template-rows: repeat(2, 86px);
-  grid-auto-flow: column;
+  grid-template-columns: repeat(6, 86px);
+  grid-auto-flow: row;
 
   scroll-snap-align: start;
 `
