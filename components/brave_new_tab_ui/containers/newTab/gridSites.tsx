@@ -6,7 +6,7 @@
 import * as React from 'react'
 
 // DnD Kit
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { AutoScrollOptions, DndContext, DragEndEvent, KeyboardSensor, MouseSensor, PointerActivationConstraint, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
 
 
@@ -28,6 +28,9 @@ import * as gridSitesActions from '../../actions/grid_sites_actions'
 import { useState, useCallback, useRef } from 'react'
 import { GridPagesContainer } from '../../components/default/gridSites/gridPagesContainer'
 import GridPageButton, { GridPageIndicator } from '../../components/default/gridSites/gridPageButton'
+
+const activationConstraint: PointerActivationConstraint = { distance: 2 };
+const autoScrollOptions: AutoScrollOptions = { interval: 500 };
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -110,6 +113,11 @@ function TopSitesList(props: Props) {
     props.actions.tilesReordered(gridSites, draggingIndex, droppedIndex);
   }, [gridSites, props.actions.tilesReordered, props.customLinksEnabled]);
 
+  const mouseSensor = useSensor(MouseSensor, { activationConstraint });
+  const touchSensor = useSensor(TouchSensor, { activationConstraint });
+  const keyboardSensor = useSensor(KeyboardSensor, {});
+  const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
+
   // Current theory:
   // Either:
   // 1. Sort the items how they're displayed, in a two row, infinite column
@@ -117,7 +125,7 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
-      <DndContext onDragEnd={onSortEnd} autoScroll={{ interval: 500 }}>
+      <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors}>
         <SortableContext items={gridSites}>
           {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
         </SortableContext>
