@@ -301,13 +301,12 @@ void AdblockDOMHandler::RefreshSubscriptionsList() {
   base::Value::List list_value;
   for (const auto& subscription : list_subscriptions) {
     base::Value::Dict dict;
-    dict.Set("subscription_url",
-                       subscription.subscription_url.spec());
+    dict.Set("subscription_url", subscription.subscription_url.spec());
     dict.Set("enabled", subscription.enabled);
     dict.Set("last_update_attempt",
-                       subscription.last_update_attempt.ToJsTime());
+             subscription.last_update_attempt.ToJsTime());
     dict.Set("last_successful_update_attempt",
-                       subscription.last_successful_update_attempt.ToJsTime());
+             subscription.last_successful_update_attempt.ToJsTime());
     if (subscription.homepage) {
       dict.Set("homepage", *subscription.homepage);
     }
