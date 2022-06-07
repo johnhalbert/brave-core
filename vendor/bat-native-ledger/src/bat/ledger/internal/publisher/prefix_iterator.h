@@ -13,13 +13,14 @@
 namespace ledger {
 namespace publisher {
 
-using PrefixIteratorBase =
-  std::iterator<std::random_access_iterator_tag, base::StringPiece>;
-
 // A random-access iterator over prefixes stored in an
 // uncompressed prefix list, suitable for binary search
-class PrefixIterator : public PrefixIteratorBase {
+class PrefixIterator {
  public:
+  using iterator_category = std::random_access_iterator_tag;
+  using value_type = base::StringPiece;
+  using difference_type = std::ptrdiff_t;
+
   PrefixIterator(const char* data, size_t index, size_t size)
       : data_(data), index_(index), size_(size) {}
 
@@ -65,8 +66,7 @@ class PrefixIterator : public PrefixIteratorBase {
     return PrefixIterator(data_, index_ + rhs.index_, size_);
   }
 
-  PrefixIteratorBase::difference_type operator-(
-      const PrefixIterator& rhs) const {
+  difference_type operator-(const PrefixIterator& rhs) const {
     return index_ - rhs.index_;
   }
 
