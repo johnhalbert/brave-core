@@ -496,5 +496,14 @@ provideStrings({
 
   // Network Filter
   braveWalletNetworkFilterAll: 'All Networks',
-  braveWalletNetworkFilterSecondary: 'Secondary Networks'
+  braveWalletNetworkFilterSecondary: 'Secondary Networks',
+
+  // Solana ProgramID Names
+  braveWalletSolanaSystemProgram: 'System Program',
+  braveWalletSolanaConfigProgram: 'Config Program',
+  braveWalletSolanaStakeProgram: 'Stake Program',
+  braveWalletSolanaVoteProgram: 'Vote Program',
+  braveWalletSolanaBPFLoader: 'BPF Loader',
+  braveWalletSolanaEd25519Program: 'Ed25519 Program',
+  braveWalletSolanaSecp256k1Program: 'Secp256k1 Program'
 })
