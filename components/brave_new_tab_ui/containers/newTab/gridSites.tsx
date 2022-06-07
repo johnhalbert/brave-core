@@ -28,7 +28,7 @@ import * as newTabActions from '../../actions/new_tab_actions'
 import * as gridSitesActions from '../../actions/grid_sites_actions'
 import { useState, useCallback, useRef } from 'react'
 import { GridPagesContainer } from '../../components/default/gridSites/gridPagesContainer'
-import GridPageButton from '../../components/default/gridSites/gridPageButton'
+import GridPageButton, { GridPageIndicator } from '../../components/default/gridSites/gridPageButton'
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -61,7 +61,6 @@ function TopSitesList(props: Props) {
   }
 
   const gridPagesContainerRef = useRef<HTMLDivElement>();
-  console.log(gridPagesContainerRef.current)
   const [dragging, setDragging] = useState(false);
   const updateBeforeSortStart = useCallback(() => setDragging(true), []);
   const onSortEnd = useCallback(({ oldIndex, newIndex }: SortEnd) => {
@@ -77,10 +76,11 @@ function TopSitesList(props: Props) {
   }, [props.gridSites, props.customLinksEnabled, props.actions.tilesReordered])
 
   const pages = Math.floor(gridSites.length / maxGridSize) + 1;
-  console.log(`Pages: ${pages}, MaxGrid: ${maxGridSize}, Sites: ${gridSites.length}`);
   const iterator: number[] = [];
   for (let i = 0; i < pages; ++i)
     iterator.push(i);
+
+  const indicatorRef = useRef<HTMLDivElement>();
 
   // Current theory:
   // Either:
@@ -88,7 +88,14 @@ function TopSitesList(props: Props) {
   // layout
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
-    <GridPagesContainer ref={gridPagesContainerRef}>
+    <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={e => {
+      const el = gridPagesContainerRef.current;
+      if (!el) return;
+
+      const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
+      const translationX = percent * (pages - 1) * 2;
+      indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
+    }}>
       {iterator.map(page => <DynamicList
         key={page}
         blockNumber={maxGridSize}
@@ -131,7 +138,11 @@ function TopSitesList(props: Props) {
       </DynamicList>)}
     </GridPagesContainer>
     <ListPageButtonContainer>
-      {iterator.map(page => <GridPageButton page={page} pageContainerRef={gridPagesContainerRef} />)}
+      {iterator.map(page => <GridPageButton
+        key={page}
+        page={page}
+        pageContainerRef={gridPagesContainerRef} />)}
+      <GridPageIndicator ref={indicatorRef as any} />
     </ListPageButtonContainer>
   </PagesContainer>;
 }
