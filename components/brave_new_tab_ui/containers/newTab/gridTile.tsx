@@ -46,13 +46,14 @@ function generateGridSiteFavicon(site: NewTab.Site): string {
 }
 
 function TopSite(props: Props) {
-  const { siteData, isDragging } = props;
+  const { siteData } = props;
 
   const tileMenuRef = useRef<any>();
   const { attributes,
     listeners,
     setNodeRef,
     transform,
+    isDragging,
     transition } = useSortable({ id: siteData.id });
   const style = useMemo(() => ({
     transform: CSS.Transform.toString(transform),
@@ -114,7 +115,13 @@ function TopSite(props: Props) {
     tabIndex={0}
     isDragging={isDragging}
     isMenuShowing={showMenu}
-    href={siteData.url}
+    onClick={e => {
+      if (isDragging) {
+        e.preventDefault();
+        console.log("Prevented!");
+      }
+    }}
+    // href={siteData.url}
     style={style}
   >
     {
@@ -139,7 +146,7 @@ function TopSite(props: Props) {
       </TileMenu>
     }
     <TileFavicon
-      draggable={false}
+      draggable={isDragging}
       src={generateGridSiteFavicon(siteData)}
     />
     <TileTitle> {siteData.title} </TileTitle>

@@ -6,7 +6,7 @@
 import * as React from 'react'
 
 // DnD Kit
-import { DndContext } from '@dnd-kit/core';
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
 
 
@@ -38,27 +38,26 @@ interface Props {
 
 function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
   useState();
-  const items = props.gridSites.slice(props.page, props.page + props.maxGridSize);
+  const start = props.page * props.maxGridSize;
+  const items = props.gridSites.slice(start, start + props.maxGridSize);
   return <List blockNumber={props.maxGridSize}>
-    <SortableContext items={items}>
-      {items.map((siteData: NewTab.Site, index: number) => (
-        <GridSiteTile
-          key={siteData.id}
-          actions={props.actions}
-          siteData={siteData}
-          isDragging={false}
-          onShowEditTopSite={props.onShowEditTopSite}
-          // User can't change order in "Most Visited" mode
-          // and they can't change position of super referral tiles
-          disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
-        />
-      ))}
-      {false &&
-        <AddSiteTile
-          isDragging={false}
-          showEditTopSite={props.onShowEditTopSite}
-        />}
-    </SortableContext>
+    {items.map((siteData: NewTab.Site, index: number) => (
+      <GridSiteTile
+        key={siteData.id}
+        actions={props.actions}
+        siteData={siteData}
+        isDragging={false}
+        onShowEditTopSite={props.onShowEditTopSite}
+        // User can't change order in "Most Visited" mode
+        // and they can't change position of super referral tiles
+        disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
+      />
+    ))}
+    {false &&
+      <AddSiteTile
+        isDragging={false}
+        showEditTopSite={props.onShowEditTopSite}
+      />}
   </List>
 }
 
@@ -98,6 +97,19 @@ function TopSitesList(props: Props) {
     indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
   }, []);
 
+  const onSortEnd = useCallback((e: DragEndEvent) => {
+    const draggingIndex = gridSites.findIndex(s => s.id == e.active.id);
+    const droppedIndex = gridSites.findIndex(s => s.id === e.over?.id);
+    console.log(e, draggingIndex, droppedIndex);
+
+    if (draggingIndex === undefined || droppedIndex === undefined) return;
+
+    if (gridSites[droppedIndex].defaultSRTopSite || !props.customLinksEnabled)
+      return;
+
+    props.actions.tilesReordered(gridSites, draggingIndex, droppedIndex);
+  }, [gridSites, props.actions.tilesReordered, props.customLinksEnabled]);
+
   // Current theory:
   // Either:
   // 1. Sort the items how they're displayed, in a two row, infinite column
@@ -105,8 +117,10 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
-      <DndContext>
-        {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
+      <DndContext onDragEnd={onSortEnd}>
+        <SortableContext items={gridSites}>
+          {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
+        </SortableContext>
       </DndContext>
     </GridPagesContainer>
     <ListPageButtonContainer>
