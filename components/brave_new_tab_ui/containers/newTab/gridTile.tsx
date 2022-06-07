@@ -26,7 +26,9 @@ import * as newTabActions from '../../actions/new_tab_actions'
 import * as gridSitesActions from '../../actions/grid_sites_actions'
 
 import { getLocale } from '../../../common/locale'
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
+import { useSortable } from '@dnd-kit/sortable'
+import {CSS} from '@dnd-kit/utilities';
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -47,6 +49,16 @@ function TopSite(props: Props) {
   const { siteData, isDragging } = props;
 
   const tileMenuRef = useRef<any>();
+  const { attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition } = useSortable({ id: siteData.id });
+  const style = useMemo(() => ({
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }), [transform, transition]);
+
   const [showMenu, setShowMenu] = useState(false);
 
   const handleClickOutside = useCallback((e: Event) => {
@@ -95,11 +107,15 @@ function TopSite(props: Props) {
   }, [props.onShowEditTopSite]);
 
   return <Tile
+    {...attributes}
+    {...listeners}
+    ref={setNodeRef}
     title={siteData.title}
     tabIndex={0}
     isDragging={isDragging}
     isMenuShowing={showMenu}
     href={siteData.url}
+    style={style}
   >
     {
       !siteData.defaultSRTopSite

@@ -40,28 +40,25 @@ function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
   useState();
   const items = props.gridSites.slice(props.page, props.page + props.maxGridSize);
   return <List blockNumber={props.maxGridSize}>
-    <DndContext>
-      <SortableContext items={items}>
-        {items.map((siteData: NewTab.Site, index: number) => (
-          <GridSiteTile
-            key={siteData.id}
-            actions={props.actions}
-            siteData={siteData}
-            isDragging={false}
-            onShowEditTopSite={props.onShowEditTopSite}
-            // User can't change order in "Most Visited" mode
-            // and they can't change position of super referral tiles
-            disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
-          />
-        ))}
-        {false &&
-          <AddSiteTile
-            isDragging={false}
-            showEditTopSite={props.onShowEditTopSite}
-          />}
-      </SortableContext>
-    </DndContext>
-
+    <SortableContext items={items}>
+      {items.map((siteData: NewTab.Site, index: number) => (
+        <GridSiteTile
+          key={siteData.id}
+          actions={props.actions}
+          siteData={siteData}
+          isDragging={false}
+          onShowEditTopSite={props.onShowEditTopSite}
+          // User can't change order in "Most Visited" mode
+          // and they can't change position of super referral tiles
+          disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
+        />
+      ))}
+      {false &&
+        <AddSiteTile
+          isDragging={false}
+          showEditTopSite={props.onShowEditTopSite}
+        />}
+    </SortableContext>
   </List>
 }
 
@@ -108,7 +105,9 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
-      {iterator.map(page => <TopSitesPage page={page} maxGridSize={maxGridSize} {...props} />)}
+      <DndContext>
+        {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
+      </DndContext>
     </GridPagesContainer>
     <ListPageButtonContainer>
       {iterator.map(page => <GridPageButton
