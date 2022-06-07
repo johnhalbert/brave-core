@@ -98,20 +98,6 @@ export const PagesContainer = styled('div') <{}>`
   align-items: center;
 `
 
-export const ListPagination = styled('div') <{}>`
-  display: flex;
-  flex-direction: row;
-
-  max-width: 596px;
-  overflow-x: auto;
-
-  scroll-snap-type: x mandatory;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`
-
 export const ListPageButtonContainer = styled('div')<{}>`
   display: flex;
   flex-direction: row;
@@ -123,8 +109,14 @@ export const ListPageButtonContainer = styled('div')<{}>`
 export const ListPageButton = styled('button') <{}>`
   all: unset;
 
+  cursor: pointer;
+
   color: #ffffff;
   opacity: 0.5;
+
+  :hover {
+    opacity: 0.8
+  }
 
   width: var(--list-page-button-size);
   height: var(--list-page-button-size);
