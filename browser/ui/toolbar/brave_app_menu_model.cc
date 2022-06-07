@@ -247,12 +247,6 @@ void BraveAppMenuModel::InsertBraveMenuItems() {
   }
 #endif
 
-  // Insert adblock menu at last. Assumed this is always enabled.
-  DCHECK(IsCommandIdEnabled(IDC_SHOW_BRAVE_ADBLOCK));
-  InsertItemWithStringIdAt(GetIndexOfBraveAdBlockItem(),
-                           IDC_SHOW_BRAVE_ADBLOCK,
-                           IDS_SHOW_BRAVE_ADBLOCK);
-
   // Insert webcompat reporter item.
   InsertItemWithStringIdAt(GetIndexOfCommandId(IDC_ABOUT),
                            IDC_SHOW_BRAVE_WEBCOMPAT_REPORTER,
