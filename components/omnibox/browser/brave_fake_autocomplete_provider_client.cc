@@ -5,18 +5,14 @@
 
 #include "brave/components/omnibox/browser/brave_fake_autocomplete_provider_client.h"
 #include "base/memory/scoped_refptr.h"
+#include "brave/browser/brave_profile_prefs.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/prefs/pref_registry_simple.h"
 
 BraveFakeAutocompleteProviderClient::BraveFakeAutocompleteProviderClient() {
   pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-  auto* registry = pref_service_->registry();
-  registry->RegisterBooleanPref(omnibox::kTopSiteSuggestionsEnabled, true);
-  registry->RegisterBooleanPref(omnibox::kBraveSuggestedSiteSuggestionsEnabled,
-                                true);
-  registry->RegisterBooleanPref(omnibox::kHistorySuggestionsEnabled, true);
-  registry->RegisterBooleanPref(omnibox::kBookmarkSuggestionsEnabled, true);
+  brave::RegisterOmniboxProfilePrefs(pref_service_->registry());
 }
 
 BraveFakeAutocompleteProviderClient::~BraveFakeAutocompleteProviderClient() =

@@ -7,7 +7,6 @@
 #define BRAVE_COMPONENTS_OMNIBOX_BROWSER_BRAVE_SEARCH_PROVIDER_H_
 
 #include "components/omnibox/browser/search_provider.h"
-#include "components/prefs/pref_member.h"
 
 class BraveSearchProvider : public SearchProvider {
  public:

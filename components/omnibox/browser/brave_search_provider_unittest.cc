@@ -73,7 +73,7 @@
 
 class BraveSearchProviderTest : public testing::Test {
  public:
-  explicit BraveSearchProviderTest(const bool command_line_overrides = false) {
+  BraveSearchProviderTest() {
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),

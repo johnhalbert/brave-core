@@ -60,8 +60,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, AutocompleteDisabledTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest, TopSiteSuggestionsEnabledTest) {
-  EXPECT_TRUE(
-      browser()->profile()->GetPrefs()->GetBoolean(omnibox::kTopSiteSuggestionsEnabled));
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      omnibox::kTopSiteSuggestionsEnabled));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAutocompleteTest,

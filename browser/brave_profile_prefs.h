@@ -2,17 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef BRAVE_BROWSER_BRAVE_BRAVE_PROFILE_PREFS_H_
-#define BRAVE_BROWSER_BRAVE_BRAVE_PROFILE_PREFS_H_
+#ifndef BRAVE_BROWSER_BRAVE_PROFILE_PREFS_H_
+#define BRAVE_BROWSER_BRAVE_PROFILE_PREFS_H_
 
+class PrefRegistrySimple;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
 namespace brave {
 
+void RegisterOmniboxProfilePrefs(PrefRegistrySimple* registry);
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace brave
 
-#endif  // BRAVE_BROWSER_BRAVE_BRAVE_PROFILE_PREFS_H_
+#endif  // BRAVE_BROWSER_BRAVE_PROFILE_PREFS_H_

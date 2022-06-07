@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "brave/browser/brave_profile_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -106,7 +107,7 @@ class BraveHistoryQuickProviderTest : public testing::Test {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     auto* registry =
         static_cast<TestingPrefServiceSimple*>(client_->GetPrefs())->registry();
-    registry->RegisterBooleanPref(omnibox::kHistorySuggestionsEnabled, true);
+    brave::RegisterOmniboxProfilePrefs(registry);
 
     CHECK(history_dir_.CreateUniqueTempDir());
     client_->set_history_service(

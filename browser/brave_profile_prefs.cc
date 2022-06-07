@@ -59,6 +59,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -173,6 +174,17 @@ void RegisterProfilePrefsForMigration(
 
   // Added 01/2022
   registry->RegisterBooleanPref(brave_rewards::prefs::kHideButton, false);
+}
+
+void RegisterOmniboxProfilePrefs(PrefRegistrySimple *registry) {
+  // Autocomplete in address bar
+  registry->RegisterBooleanPref(omnibox::kAutocompleteEnabled, true);
+  registry->RegisterBooleanPref(omnibox::kTopSiteSuggestionsEnabled, true);
+  registry->RegisterBooleanPref(omnibox::kBraveSuggestedSiteSuggestionsEnabled,
+                                false);
+  registry->RegisterBooleanPref(omnibox::kHistorySuggestionsEnabled, true);
+  registry->RegisterBooleanPref(omnibox::kBookmarkSuggestionsEnabled, true);
+
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -378,13 +390,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kGeminiRefreshToken, "");
 #endif
 
-  // Autocomplete in address bar
-  registry->RegisterBooleanPref(omnibox::kAutocompleteEnabled, true);
-  registry->RegisterBooleanPref(omnibox::kTopSiteSuggestionsEnabled, true);
-  registry->RegisterBooleanPref(omnibox::kBraveSuggestedSiteSuggestionsEnabled,
-                                false);
-  registry->RegisterBooleanPref(omnibox::kHistorySuggestionsEnabled, true);
-  registry->RegisterBooleanPref(omnibox::kBookmarkSuggestionsEnabled, true);
+  RegisterOmniboxProfilePrefs(registry);
 
   // Password leak detection should be disabled
   registry->SetDefaultPrefValue(
