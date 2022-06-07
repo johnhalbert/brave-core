@@ -128,6 +128,7 @@ public class AddSwitchChainNetworkFragment extends BaseDAppsFragment {
                 processSwitchChainRequest(mSwitchChainRequest, true);
                 processNextSwitchChainRequest();
             }
+            Utils.calculateWalletBadgeVisibility();
         });
         Button btnAddSwitchCancel =
                 view.findViewById(R.id.fragment_add_switch_eth_chain_btn_cancel);
@@ -139,6 +140,7 @@ public class AddSwitchChainNetworkFragment extends BaseDAppsFragment {
                 processSwitchChainRequest(mSwitchChainRequest, false);
                 processNextSwitchChainRequest();
             }
+            Utils.calculateWalletBadgeVisibility();
         });
         mFavicon = view.findViewById(R.id.fragment_add_token_iv_domain_icon);
         TextView siteTv = view.findViewById(R.id.fragment_add_token_tv_site);
