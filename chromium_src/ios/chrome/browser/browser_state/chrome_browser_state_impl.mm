@@ -5,7 +5,11 @@
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state_impl.h"
 
+#include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#include "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#include "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"
 
 #define BrowserPolicyConnectorIOS \
   if (false) {                    \
