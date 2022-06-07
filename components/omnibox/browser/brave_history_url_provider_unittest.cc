@@ -18,7 +18,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "brave/components/constants/pref_names.h"
 #include "brave/components/omnibox/browser/brave_history_quick_provider.h"
 #include "build/build_config.h"
 #include "components/bookmarks/test/test_bookmark_client.h"

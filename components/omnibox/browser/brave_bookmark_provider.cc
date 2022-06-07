@@ -4,7 +4,6 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "brave/components/omnibox/browser/brave_bookmark_provider.h"
-#include "brave/components/constants/pref_names.h"
 #include "brave/components/omnibox/browser/brave_history_quick_provider.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
