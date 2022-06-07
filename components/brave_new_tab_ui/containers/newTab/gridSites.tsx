@@ -81,6 +81,14 @@ function TopSitesList(props: Props) {
     iterator.push(i);
 
   const indicatorRef = useRef<HTMLDivElement>();
+  const scrollHandler = useCallback(() => {
+    const el = gridPagesContainerRef.current;
+    if (!el) return;
+
+    const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
+    const translationX = percent * (pages - 1) * 2;
+    indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
+  }, []);
 
   // Current theory:
   // Either:
@@ -88,14 +96,7 @@ function TopSitesList(props: Props) {
   // layout
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
-    <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={e => {
-      const el = gridPagesContainerRef.current;
-      if (!el) return;
-
-      const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
-      const translationX = percent * (pages - 1) * 2;
-      indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
-    }}>
+    <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
       {iterator.map(page => <DynamicList
         key={page}
         blockNumber={maxGridSize}
