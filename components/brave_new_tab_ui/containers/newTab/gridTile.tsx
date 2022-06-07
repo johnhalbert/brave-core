@@ -26,6 +26,7 @@ import * as newTabActions from '../../actions/new_tab_actions'
 import * as gridSitesActions from '../../actions/grid_sites_actions'
 
 import { getLocale } from '../../../common/locale'
+import { useRef, useState, useCallback, useEffect } from 'react'
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -35,121 +36,98 @@ interface Props {
   onShowEditTopSite: (targetTopSiteForEditing?: NewTab.Site) => void
 }
 
-interface State {
-  showMenu: boolean
-}
-
-function generateGridSiteFavicon (site: NewTab.Site): string {
+function generateGridSiteFavicon(site: NewTab.Site): string {
   if (site.favicon === '') {
     return `chrome://favicon/size/64@1x/${site.url}`
   }
   return site.favicon
 }
 
-class TopSite extends React.PureComponent<Props, State> {
-  tileMenuRef: React.RefObject<any>
-  constructor (props: Props) {
-    super(props)
-    this.state = {
-      showMenu: false
+function TopSite(props: Props) {
+  const { siteData, isDragging } = props;
+
+  const tileMenuRef = useRef<any>();
+  const [showMenu, setShowMenu] = useState(false);
+
+  const handleClickOutside = useCallback((e: Event) => {
+    if (!tileMenuRef.current || tileMenuRef.current.contains(e.target))
+      return;
+    setShowMenu(false);
+  }, []);
+
+  const handleMoveOutside = useCallback((e: Event) => {
+    if (!tileMenuRef.current || tileMenuRef.current.contains(e.target))
+      return;
+    setShowMenu(false);
+  }, []);
+
+  const onKeyPressSettings = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape')
+      setShowMenu(false);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mouseMove', handleMoveOutside);
+    document.addEventListener('keydown', onKeyPressSettings);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousemove', handleMoveOutside);
+      document.removeEventListener('keydown', onKeyPressSettings);
     }
-    this.tileMenuRef = React.createRef()
-  }
+  }, [handleClickOutside, handleMoveOutside, onKeyPressSettings]);
 
-  componentDidMount () {
-    document.addEventListener('mousedown', this.handleClickOutside)
-    document.addEventListener('mouseMove', this.handleMoveOutside)
-    document.addEventListener('keydown', this.onKeyPressSettings)
-  }
+  const onShowTileMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowMenu(true);
+  }, []);
 
-  componentWillUnmount () {
-    document.removeEventListener('mousedown', this.handleClickOutside)
-    document.removeEventListener('mousemove', this.handleMoveOutside)
-    document.removeEventListener('keydown', this.onKeyPressSettings)
-  }
+  const onIgnoredTopSite = useCallback((site: NewTab.Site, e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowMenu(false);
+    props.actions.tileRemoved(site.url);
+  }, [props.actions.tileRemoved]);
 
-  onKeyPressSettings = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      this.setState({ showMenu: false })
+  const onEditTopSite = useCallback((site: NewTab.Site, e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowMenu(false);
+    props.onShowEditTopSite(site)
+  }, [props.onShowEditTopSite]);
+
+  return <Tile
+    title={siteData.title}
+    tabIndex={0}
+    isDragging={isDragging}
+    isMenuShowing={showMenu}
+    href={siteData.url}
+  >
+    {
+      !siteData.defaultSRTopSite
+        ? <TileActionsContainer>
+          <TileAction onClick={onShowTileMenu}>
+            <EditIcon />
+          </TileAction>
+        </TileActionsContainer>
+        : null
     }
-  }
-
-  handleClickOutside = (event: Event) => {
-    if (
-      this.tileMenuRef &&
-      this.tileMenuRef.current &&
-      !this.tileMenuRef.current.contains(event.target)
-    ) {
-      this.setState({ showMenu: false })
+    {showMenu &&
+      <TileMenu ref={tileMenuRef}>
+        <TileMenuItem onClick={e => onEditTopSite(siteData, e)}>
+          <EditMenuIcon />
+          {getLocale('editSiteTileMenuItem')}
+        </TileMenuItem>
+        <TileMenuItem onClick={e => onIgnoredTopSite(siteData, e)}>
+          <TrashIcon />
+          {getLocale('removeTileMenuItem')}
+        </TileMenuItem>
+      </TileMenu>
     }
-  }
-
-  handleMoveOutside = (event: Event) => {
-    if (
-      this.tileMenuRef &&
-      this.tileMenuRef.current &&
-      !this.tileMenuRef.current.contains(event.target)
-    ) {
-      this.setState({ showMenu: false })
-    }
-  }
-
-  onIgnoredTopSite (site: NewTab.Site, e: Event) {
-    e.preventDefault()
-    this.setState({ showMenu: false })
-    this.props.actions.tileRemoved(site.url)
-  }
-
-  onEditTopSite (site: NewTab.Site, e: Event) {
-    e.preventDefault()
-    this.setState({ showMenu: false })
-    this.props.onShowEditTopSite(site)
-  }
-
-  onShowTileMenu = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault()
-    this.setState({ showMenu: true })
-  }
-
-  render () {
-    const { siteData, isDragging } = this.props
-    return (
-      <Tile
-        title={siteData.title}
-        tabIndex={0}
-        isDragging={isDragging}
-        isMenuShowing={this.state.showMenu}
-        href={siteData.url}
-      >
-        {
-          !siteData.defaultSRTopSite
-          ? <TileActionsContainer>
-              <TileAction onClick={this.onShowTileMenu}>
-                <EditIcon/>
-              </TileAction>
-            </TileActionsContainer>
-          : null
-        }
-        { this.state.showMenu &&
-          <TileMenu ref={this.tileMenuRef}>
-            <TileMenuItem onClick={this.onEditTopSite.bind(this, siteData)}>
-              <EditMenuIcon />
-              {getLocale('editSiteTileMenuItem')}
-            </TileMenuItem>
-            <TileMenuItem onClick={this.onIgnoredTopSite.bind(this, siteData)}>
-              <TrashIcon />
-              {getLocale('removeTileMenuItem')}
-            </TileMenuItem>
-          </TileMenu>
-        }
-        <TileFavicon
-          draggable={false}
-          src={generateGridSiteFavicon(siteData)}
-        />
-        <TileTitle> {siteData.title} </TileTitle>
-      </Tile>
-    )
-  }
+    <TileFavicon
+      draggable={false}
+      src={generateGridSiteFavicon(siteData)}
+    />
+    <TileTitle> {siteData.title} </TileTitle>
+  </Tile>;
 }
 
 export default TopSite

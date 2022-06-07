@@ -5,6 +5,12 @@
 
 import * as React from 'react'
 
+// DnD Kit
+import { DndContext } from '@dnd-kit/core';
+import { SortableContext } from '@dnd-kit/sortable';
+
+
+
 // Feature-specific components
 import { List, ListPageButtonContainer, PagesContainer } from '../../components/default/gridSites'
 import createWidget from '../../components/default/widget'
@@ -30,9 +36,38 @@ interface Props {
   onShowEditTopSite: (targetTopSiteForEditing?: NewTab.Site) => void
 }
 
+function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
+  useState();
+  const items = props.gridSites.slice(props.page, props.page + props.maxGridSize);
+  return <List blockNumber={props.maxGridSize}>
+    <DndContext>
+      <SortableContext items={items}>
+        {items.map((siteData: NewTab.Site, index: number) => (
+          <GridSiteTile
+            key={siteData.id}
+            actions={props.actions}
+            siteData={siteData}
+            isDragging={false}
+            onShowEditTopSite={props.onShowEditTopSite}
+            // User can't change order in "Most Visited" mode
+            // and they can't change position of super referral tiles
+            disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
+          />
+        ))}
+        {false &&
+          <AddSiteTile
+            isDragging={false}
+            showEditTopSite={props.onShowEditTopSite}
+          />}
+      </SortableContext>
+    </DndContext>
+
+  </List>
+}
+
 function TopSitesList(props: Props) {
-  const { actions, gridSites, onShowEditTopSite, customLinksEnabled } = props
-  const insertAddSiteTile = customLinksEnabled && gridSites.length < MAX_GRID_SIZE
+  const { gridSites, customLinksEnabled } = props
+  // const insertAddSiteTile = customLinksEnabled && gridSites.length < MAX_GRID_SIZE
   let maxGridSize = customLinksEnabled ? MAX_GRID_SIZE : (MAX_GRID_SIZE / 2)
 
   // In favorites mode, makes widget area fits to tops sites items count + 1 if
@@ -49,7 +84,7 @@ function TopSitesList(props: Props) {
   }
 
   const gridPagesContainerRef = useRef<HTMLDivElement>();
-  const [dragging, _] = useState(false);
+  // const [dragging, _] = useState(false);
 
   const pages = Math.floor(gridSites.length / maxGridSize) + 1;
   const iterator: number[] = [];
@@ -73,33 +108,7 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
-      {iterator.map(page => <List
-        key={page}
-        blockNumber={maxGridSize}
-      >
-
-        {
-          gridSites.slice(page, page + maxGridSize)
-            .map((siteData: NewTab.Site, index: number) => (
-              <GridSiteTile
-                key={siteData.id}
-                actions={actions}
-                siteData={siteData}
-                isDragging={dragging}
-                onShowEditTopSite={onShowEditTopSite}
-                // User can't change order in "Most Visited" mode
-                // and they can't change position of super referral tiles
-                disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
-              />
-            ))
-        }
-        {insertAddSiteTile}
-        <AddSiteTile
-          isDragging={dragging}
-          showEditTopSite={onShowEditTopSite}
-        />
-
-      </List>)}
+      {iterator.map(page => <TopSitesPage page={page} maxGridSize={maxGridSize} {...props} />)}
     </GridPagesContainer>
     <ListPageButtonContainer>
       {iterator.map(page => <GridPageButton
