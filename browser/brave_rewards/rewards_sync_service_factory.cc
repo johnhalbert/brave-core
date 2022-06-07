@@ -6,11 +6,15 @@
 #include "brave/browser/brave_rewards/rewards_sync_service_factory.h"
 
 #include "brave/browser/brave_rewards/rewards_chrome_sync_client.h"
+#include "brave/browser/brave_rewards/vg_sync_service_factory.h"
 #include "chrome/browser/sync/chrome_sync_client.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/undo/bookmark_undo_service_factory.h"
 
+#define BookmarkUndoServiceFactory BookmarkUndoServiceFactory::GetInstance()); DependsOn(brave_rewards::VgSyncServiceFactory
 #define ChromeSyncClient RewardsChromeSyncClient
 #define SyncServiceFactory RewardsSyncServiceFactory
 #include "chrome/browser/sync/sync_service_factory.cc"
-#undef ChromeSyncClient
 #undef SyncServiceFactory
+#undef ChromeSyncClient
+#undef BookmarkUndoServiceFactory
