@@ -5,15 +5,8 @@
 
 import * as React from 'react'
 
-// DnD utils
-import {
-  SortableContainer,
-  SortEnd,
-  SortableContainerProps
-} from 'react-sortable-hoc'
-
 // Feature-specific components
-import { List, ListPageButtonContainer, ListProps, PagesContainer } from '../../components/default/gridSites'
+import { List, ListPageButtonContainer, PagesContainer } from '../../components/default/gridSites'
 import createWidget from '../../components/default/widget'
 
 // Component groups
@@ -37,11 +30,6 @@ interface Props {
   onShowEditTopSite: (targetTopSiteForEditing?: NewTab.Site) => void
 }
 
-type DynamicListProps = SortableContainerProps & ListProps
-const DynamicList = SortableContainer((props: DynamicListProps) => {
-  return <List {...props} />
-}, { withRef: true });
-
 function TopSitesList(props: Props) {
   const { actions, gridSites, onShowEditTopSite, customLinksEnabled } = props
   const insertAddSiteTile = customLinksEnabled && gridSites.length < MAX_GRID_SIZE
@@ -61,19 +49,7 @@ function TopSitesList(props: Props) {
   }
 
   const gridPagesContainerRef = useRef<HTMLDivElement>();
-  const [dragging, setDragging] = useState(false);
-  const updateBeforeSortStart = useCallback(() => setDragging(true), []);
-  const onSortEnd = useCallback(({ oldIndex, newIndex }: SortEnd) => {
-    setDragging(false);
-
-    // User can't change order in "Most Visited" mode
-    // and they can't change position of super referral tiles
-    if (props.gridSites[newIndex].defaultSRTopSite ||
-      !props.customLinksEnabled) {
-      return
-    }
-    props.actions.tilesReordered(props.gridSites, oldIndex, newIndex)
-  }, [props.gridSites, props.customLinksEnabled, props.actions.tilesReordered])
+  const [dragging, _] = useState(false);
 
   const pages = Math.floor(gridSites.length / maxGridSize) + 1;
   const iterator: number[] = [];
@@ -97,19 +73,9 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
-      {iterator.map(page => <DynamicList
+      {iterator.map(page => <List
         key={page}
         blockNumber={maxGridSize}
-        updateBeforeSortStart={updateBeforeSortStart}
-        onSortEnd={onSortEnd}
-        axis='xy'
-        lockToContainerEdges={true}
-        lockOffset={'15%'}
-        // Ensure there is some movement from the user side before triggering the
-        // draggable handler. Otherwise click events will be swallowed since
-        // react-sortable-hoc works via mouseDown event.
-        // See https://github.com/clauderic/react-sortable-hoc#click-events-being-swallowed
-        distance={2}
       >
 
         {
@@ -118,7 +84,6 @@ function TopSitesList(props: Props) {
               <GridSiteTile
                 key={siteData.id}
                 actions={actions}
-                index={index}
                 siteData={siteData}
                 isDragging={dragging}
                 onShowEditTopSite={onShowEditTopSite}
@@ -130,13 +95,11 @@ function TopSitesList(props: Props) {
         }
         {insertAddSiteTile}
         <AddSiteTile
-          index={gridSites.length}
-          disabled={true}
           isDragging={dragging}
           showEditTopSite={onShowEditTopSite}
         />
 
-      </DynamicList>)}
+      </List>)}
     </GridPagesContainer>
     <ListPageButtonContainer>
       {iterator.map(page => <GridPageButton

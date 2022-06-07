@@ -4,7 +4,6 @@
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as React from 'react'
-import { SortableElement, SortableElementProps } from 'react-sortable-hoc'
 
 import { getLocale } from '../../../common/locale'
 import { AddSiteTile, AddSiteTileImage, TileTitle } from '../../components/default'
@@ -34,7 +33,4 @@ class AddSite extends React.PureComponent<Props, {}> {
   }
 }
 
-type TopSiteSortableElementProps = SortableElementProps & Props
-export default SortableElement(
-  (props: TopSiteSortableElementProps) => <AddSite {...props} />
-)
+export default AddSite;

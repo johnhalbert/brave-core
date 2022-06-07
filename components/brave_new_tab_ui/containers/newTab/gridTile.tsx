@@ -5,8 +5,6 @@
 
 import * as React from 'react'
 
-import { SortableElement, SortableElementProps } from 'react-sortable-hoc'
-
 // Feature-specific components
 import {
   Tile,
@@ -154,7 +152,5 @@ class TopSite extends React.PureComponent<Props, State> {
   }
 }
 
-type TopSiteSortableElementProps = SortableElementProps & Props
-export default SortableElement(
-  (props: TopSiteSortableElementProps) => <TopSite {...props} />
-)
+export default TopSite
+
