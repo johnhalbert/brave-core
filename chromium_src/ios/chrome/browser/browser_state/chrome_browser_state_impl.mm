@@ -7,7 +7,9 @@
 
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 
-#define BrowserPolicyConnectorIOS if (false) { BrowserPolicyConnectorIOS
+#define BrowserPolicyConnectorIOS \
+  if (false) {                    \
+  BrowserPolicyConnectorIOS
 #define BRAVE_CHROME_BROWSER_STATE_IMPL_CHROME_BROWSER_STATE_IMPL_CLOSE_IF }
 #define GetPolicyConnector GetPolicyConnector_ChromiumImpl
 
