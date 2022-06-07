@@ -4,6 +4,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import * as React from 'react'
+import * as Solana from '@solana/web3.js'
 
 // Constants
 import {
@@ -17,6 +18,7 @@ import { MAX_UINT256 } from '../constants/magics'
 // Utils
 import Amount from '../../utils/amount'
 import { getLocale } from '../../../common/locale'
+import { getTypedSolanaTxInstructions, TypedSolanaInstructionWithParams } from '../../utils/solana-instruction-utils'
 
 // Hooks
 import usePricing from './pricing'
@@ -25,6 +27,8 @@ import useBalance from './balance'
 
 // Options
 import { makeNetworkAsset } from '../../options/asset-options'
+
+type SolanaParamsWithLamports = Solana.CreateAccountParams | Solana.CreateAccountWithSeedParams | Solana.TransferParams | Solana.TransferWithSeedParams | Solana.WithdrawNonceParams
 
 interface ParsedTransactionFees {
   gasLimit: string
@@ -72,6 +76,9 @@ export interface ParsedTransaction extends ParsedTransactionFees {
   sellAmount?: string
   buyToken?: BraveWallet.BlockchainToken
   minBuyAmount?: string
+
+  // Solana Dapp Instructions
+  instructions?: TypedSolanaInstructionWithParams[]
 }
 
 export function useTransactionFeesParser (selectedNetwork: BraveWallet.NetworkInfo, networkSpotPrice: string, solFeeEstimates?: SolFeeEstimates) {
@@ -95,16 +102,25 @@ export function useTransactionFeesParser (selectedNetwork: BraveWallet.NetworkIn
 
   return React.useCallback((transactionInfo: BraveWallet.TransactionInfo): ParsedTransactionFees => {
     const { txDataUnion: { ethTxData1559: txData, filTxData }, txType } = transactionInfo
+
     const isSolTransaction =
       txType === BraveWallet.TransactionType.SolanaSystemTransfer ||
       txType === BraveWallet.TransactionType.SolanaSPLTokenTransfer ||
-      txType === BraveWallet.TransactionType.SolanaSPLTokenTransferWithAssociatedTokenAccountCreation
-    const isFilTrtansaction = filTxData !== undefined
-    const gasLimit = isFilTrtansaction ? filTxData.gasLimit : txData?.baseData.gasLimit || ''
+      txType === BraveWallet.TransactionType.SolanaSPLTokenTransferWithAssociatedTokenAccountCreation ||
+      txType === BraveWallet.TransactionType.SolanaDappSignAndSendTransaction ||
+      txType === BraveWallet.TransactionType.SolanaDappSignTransaction
+
+    const isFilTransaction = filTxData !== undefined
+
+    const gasLimit = isFilTransaction
+      ? filTxData.gasLimit
+      : txData?.baseData.gasLimit || ''
+
     const gasPrice = txData?.baseData.gasPrice || ''
     const maxFeePerGas = txData?.maxFeePerGas || ''
     const maxPriorityFeePerGas = txData?.maxPriorityFeePerGas || ''
     const isEIP1559Transaction = maxPriorityFeePerGas !== '' && maxFeePerGas !== ''
+
     const gasFee = isSolTransaction
       ? new Amount(solFeeEstimates?.fee.toString() ?? '').format()
       : isEIP1559Transaction
@@ -201,22 +217,43 @@ export function useTransactionParser (
       : undefined
   }
 
-  return React.useCallback((transactionInfo: BraveWallet.TransactionInfo) => {
-    const { txArgs, txDataUnion: { ethTxData1559: txData, solanaTxData: solTxData }, fromAddress, txType } = transactionInfo
+  return React.useCallback((transactionInfo: BraveWallet.TransactionInfo): ParsedTransaction => {
+    const {
+      txArgs,
+      txDataUnion: {
+        ethTxData1559: txData,
+        solanaTxData: solTxData
+      },
+      fromAddress,
+      txType
+    } = transactionInfo
+
+    const feeDetails = parseTransactionFees(transactionInfo)
+    const { gasFeeFiat, gasFee } = feeDetails
+
+    const isSolanaDappTransaction =
+      txType === BraveWallet.TransactionType.SolanaDappSignAndSendTransaction ||
+      txType === BraveWallet.TransactionType.SolanaDappSignTransaction
+
     const isSPLTransaction =
       txType === BraveWallet.TransactionType.SolanaSPLTokenTransfer ||
       txType === BraveWallet.TransactionType.SolanaSPLTokenTransferWithAssociatedTokenAccountCreation
+
     const isSolTransaction =
       txType === BraveWallet.TransactionType.SolanaSystemTransfer ||
-      isSPLTransaction
+      isSPLTransaction ||
+      isSolanaDappTransaction
+
     const value = isSPLTransaction
       ? solTxData?.amount.toString() ?? ''
       : isSolTransaction
         ? solTxData?.lamports.toString() ?? ''
         : txData?.baseData.value || ''
+
     const to = isSolTransaction
       ? solTxData?.toWalletAddress ?? ''
       : txData?.baseData.to || ''
+
     const nonce = txData?.baseData.nonce || ''
     const account = accounts.find((account) => account.address.toLowerCase() === fromAddress.toLowerCase())
     const token = isSPLTransaction ? findToken(solTxData?.splTokenMintAddress ?? '') : findToken(to)
@@ -224,6 +261,86 @@ export function useTransactionParser (
     const accountTokenBalance = getBalance(account, token)
 
     switch (true) {
+      case txType === BraveWallet.TransactionType.SolanaDappSignTransaction:
+      case txType === BraveWallet.TransactionType.SolanaDappSignAndSendTransaction: {
+        const instructions = solTxData ? getTypedSolanaTxInstructions(solTxData) : []
+
+        const lamportsMovedFromInstructions = instructions.reduce((acc, { type, params }) => {
+          const lamportsAmount = (params as SolanaParamsWithLamports)?.lamports?.toString() ?? '0'
+
+          switch (type) {
+            case 'Transfer':
+            case 'TransferWithSeed': {
+              const { fromPubkey, toPubkey } = params as Solana.TransferParams | Solana.TransferWithSeedParams
+              // only show lamports as transfered if the amount is going to a different pubKey
+              if (!toPubkey.equals(fromPubkey)) {
+                return acc.plus(lamportsAmount)
+              }
+              return acc
+            }
+
+            case 'WithdrawNonceAccount': {
+              const { noncePubkey, toPubkey } = params as Solana.WithdrawNonceParams
+              if (noncePubkey.equals(new Solana.PublicKey(fromAddress))) {
+                return acc.plus(lamportsAmount)
+              }
+
+              if (toPubkey.equals(new Solana.PublicKey(fromAddress))) {
+                return acc.minus(lamportsAmount)
+              }
+            }
+
+            case 'Create':
+            case 'CreateWithSeed':
+            default: return acc.plus(lamportsAmount)
+          }
+        }, new Amount(0)) ?? 0
+
+        const transferedValue = lamportsMovedFromInstructions.toNumber() + value
+
+        const transferedAmountFiat = computeFiatAmount(transferedValue, selectedNetwork.symbol, selectedNetwork.decimals)
+
+        const totalAmountFiat = new Amount(gasFeeFiat)
+          .plus(transferedAmountFiat)
+
+        const parsedTx: ParsedTransaction = {
+          hash: transactionInfo.txHash,
+          nonce,
+          createdTime: transactionInfo.createdTime,
+          status: transactionInfo.txStatus,
+          sender: fromAddress,
+          senderLabel: getAddressLabel(fromAddress),
+          recipient: to,
+          recipientLabel: getAddressLabel(to),
+          fiatValue: transferedAmountFiat,
+          fiatTotal: totalAmountFiat,
+          formattedNativeCurrencyTotal: transferedAmountFiat
+            .div(networkSpotPrice)
+            .formatAsAsset(6, selectedNetwork.symbol),
+          value: new Amount(transferedValue)
+            .divideByDecimals(selectedNetwork.decimals)
+            .format(6),
+          valueExact: new Amount(transferedValue)
+            .divideByDecimals(selectedNetwork.decimals)
+            .format(),
+          symbol: selectedNetwork.symbol,
+          decimals: selectedNetwork?.decimals ?? 18,
+          insufficientFundsError: accountNativeBalance !== ''
+            ? new Amount(transferedValue)
+              .plus(gasFee)
+              .gt(accountNativeBalance)
+            : undefined,
+          insufficientFundsForGasError: accountNativeBalance !== ''
+            ? new Amount(gasFee).gt(accountNativeBalance)
+            : undefined,
+          isSwap: false,
+          instructions,
+          ...feeDetails
+        }
+
+        return parsedTx
+      }
+
       // transfer(address recipient, uint256 amount) → bool
       case txType === BraveWallet.TransactionType.ERC20Transfer: {
         const [address, amount] = txArgs
@@ -232,8 +349,6 @@ export function useTransactionParser (
           .divideByDecimals(token?.decimals ?? 18)
           .times(price)
 
-        const feeDetails = parseTransactionFees(transactionInfo)
-        const { gasFeeFiat, gasFee } = feeDetails
         const totalAmountFiat = new Amount(gasFeeFiat)
           .plus(sendAmountFiat)
 
@@ -283,8 +398,6 @@ export function useTransactionParser (
         // caller (fromAddress).
         const [owner, toAddress, tokenID] = txArgs
 
-        const feeDetails = parseTransactionFees(transactionInfo)
-        const { gasFeeFiat, gasFee } = feeDetails
         const totalAmountFiat = gasFeeFiat
 
         const insufficientNativeFunds = accountNativeBalance !== ''
@@ -322,8 +435,6 @@ export function useTransactionParser (
       // approve(address spender, uint256 amount) → bool
       case txType === BraveWallet.TransactionType.ERC20Approve: {
         const [address, amount] = txArgs
-        const feeDetails = parseTransactionFees(transactionInfo)
-        const { gasFeeFiat, gasFee } = feeDetails
         const totalAmountFiat = new Amount(gasFeeFiat)
         const insufficientNativeFunds = accountNativeBalance !== ''
           ? new Amount(gasFee).gt(accountNativeBalance)
@@ -369,8 +480,6 @@ export function useTransactionParser (
           .divideByDecimals(token?.decimals ?? 9)
           .times(price)
 
-        const feeDetails = parseTransactionFees(transactionInfo)
-        const { gasFeeFiat, gasFee } = feeDetails
         const totalAmountFiat = new Amount(gasFeeFiat)
           .plus(sendAmountFiat)
 
@@ -439,8 +548,6 @@ export function useTransactionParser (
           .divideByDecimals(buyToken.decimals)
           .format(6)
 
-        const feeDetails = parseTransactionFees(transactionInfo)
-        const { gasFeeFiat, gasFee } = feeDetails
         const totalAmountFiat = new Amount(gasFeeFiat)
           .plus(sellAmountFiat)
 
@@ -496,8 +603,6 @@ export function useTransactionParser (
       default: {
         const sendAmountFiat = computeFiatAmount(value, selectedNetwork.symbol, selectedNetwork.decimals)
 
-        const feeDetails = parseTransactionFees(transactionInfo)
-        const { gasFeeFiat, gasFee } = feeDetails
         const totalAmountFiat = new Amount(gasFeeFiat)
           .plus(sendAmountFiat)
 
