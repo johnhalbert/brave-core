@@ -30,8 +30,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_terms_data.h"
-#include "gmock/gmock.h"
-#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
 class MockHistoryService : public history::HistoryService {

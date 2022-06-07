@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
-#include "brave/components/constants/pref_names.h"
 #include "brave/components/omnibox/browser/brave_fake_autocomplete_provider_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -16,7 +15,8 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/prefs/pref_service.h"
-#include "gmock/gmock.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 class BraveBookmarkProviderTest : public testing::Test {
