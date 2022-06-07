@@ -27,6 +27,30 @@
 
 namespace skus {
 
+namespace {
+void ExecuteScript(blink::WebLocalFrame* web_frame, const std::string script) {
+  if (web_frame->IsProvisional())
+    return;
+
+  web_frame->ExecuteScript(
+      blink::WebScriptSource(blink::WebString::FromUTF8(script)));
+}
+void SetProviderNonWritable(blink::WebLocalFrame* web_frame,
+                            const std::string& provider) {
+  const char* provider_str = provider.c_str();
+  const std::string script = base::StringPrintf(
+      R"(;(function() {
+           Object.defineProperty(window.chrome, '%s', {
+             value: window.chrome.%s,
+             configurable: false,
+             writable: false
+           });
+    })();)",
+      provider_str, provider_str);
+  ExecuteScript(web_frame, script);
+}
+}  // namespace
+
 gin::WrapperInfo SkusJSHandler::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 SkusJSHandler::SkusJSHandler(content::RenderFrame* render_frame)
@@ -84,6 +108,8 @@ void SkusJSHandler::AddJavaScriptObjectToFrame(v8::Local<v8::Context> context) {
   chrome_obj
       ->Set(context, gin::StringToSymbol(isolate, "braveSkus"), handler.ToV8())
       .Check();
+  blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
+  SetProviderNonWritable(web_frame, "braveSkus");
 }
 
 // window.chrome.braveSkus.refresh_order
