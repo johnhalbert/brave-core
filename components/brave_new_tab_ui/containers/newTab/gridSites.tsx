@@ -117,7 +117,7 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
-      <DndContext onDragEnd={onSortEnd}>
+      <DndContext onDragEnd={onSortEnd} autoScroll={{ interval: 500 }}>
         <SortableContext items={gridSites}>
           {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
         </SortableContext>
