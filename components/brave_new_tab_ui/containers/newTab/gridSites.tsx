@@ -94,13 +94,12 @@ function TopSitesList(props: Props) {
   const onSortEnd = useCallback((e: DragEndEvent) => {
     e.activatorEvent.preventDefault();
     e.activatorEvent.stopPropagation();
-    e.activatorEvent.stopImmediatePropagation();
 
     const draggingIndex = gridSites.findIndex(s => s.id == e.active.id);
     const droppedIndex = gridSites.findIndex(s => s.id === e.over?.id);
-    console.log(e.activatorEvent.type, e, draggingIndex, droppedIndex);
 
-    if (draggingIndex === undefined || droppedIndex === undefined) return;
+    if (draggingIndex === undefined || droppedIndex === undefined)
+      return;
 
     if (gridSites[droppedIndex].defaultSRTopSite || !props.customLinksEnabled)
       return;
