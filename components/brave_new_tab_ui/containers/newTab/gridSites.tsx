@@ -76,10 +76,8 @@ function TopSitesList(props: Props) {
 
   const gridPagesContainerRef = useRef<HTMLDivElement>();
 
-  const pages = Math.floor(gridSites.length / maxGridSize) + 1;
-  const iterator: number[] = [];
-  for (let i = 0; i < pages; ++i)
-    iterator.push(i);
+  const pageCount = Math.floor(gridSites.length / maxGridSize) + 1;
+  const pages = [...Array(pageCount).keys()];
 
   const indicatorRef = useRef<HTMLDivElement>();
   const scrollHandler = useCallback(() => {
@@ -87,9 +85,9 @@ function TopSitesList(props: Props) {
     if (!el) return;
 
     const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
-    const translationX = percent * (pages - 1) * 2;
+    const translationX = percent * (pageCount - 1) * 2;
     indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
-  }, [pages]);
+  }, [pageCount]);
 
   const onSortEnd = useCallback((e: DragEndEvent) => {
     e.activatorEvent.preventDefault();
@@ -121,13 +119,13 @@ function TopSitesList(props: Props) {
     <GridPagesContainer ref={gridPagesContainerRef as any} onScroll={scrollHandler}>
       <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors}>
         <SortableContext items={gridSites}>
-          {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
+          {pages.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
           <TopSiteDragOverlay sites={gridSites} />
         </SortableContext>
       </DndContext>
     </GridPagesContainer>
     <ListPageButtonContainer>
-      {iterator.map(page => <GridPageButton
+      {pages.map(page => <GridPageButton
         key={page}
         page={page}
         pageContainerRef={gridPagesContainerRef} />)}
