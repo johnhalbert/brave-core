@@ -90,7 +90,7 @@ function TopSitesList(props: Props) {
     const percent = 100 * (el.scrollLeft) / (el.scrollWidth - el.clientWidth);
     const translationX = percent * (pages - 1) * 2;
     indicatorRef.current?.setAttribute('style', `transform: translateX(${translationX}%)`)
-  }, []);
+  }, [pages]);
 
   const onSortEnd = useCallback((e: DragEndEvent) => {
     e.activatorEvent.preventDefault();
