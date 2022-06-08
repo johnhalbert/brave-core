@@ -12,11 +12,11 @@ import { SortableContext } from '@dnd-kit/sortable';
 
 
 // Feature-specific components
-import { List, ListPageButtonContainer, PagesContainer, Tile, TileFavicon, TileTitle } from '../../components/default/gridSites'
+import { List, ListPageButtonContainer, PagesContainer } from '../../components/default/gridSites'
 import createWidget from '../../components/default/widget'
 
 // Component groups
-import GridSiteTile from './gridTile'
+import GridSiteTile, { SiteTile } from './gridTile'
 import AddSiteTile from './addSiteTile'
 
 // Constants
@@ -139,13 +139,7 @@ function TopSitesList(props: Props) {
         <SortableContext items={gridSites}>
           {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
           <DragOverlay>
-            <Tile isDragging={true} isMenuShowing={false}>
-              <TileFavicon
-                draggable={true}
-                src={dragging?.favicon || `chrome://favicon/size/64@1x/${dragging?.url}`}
-              />
-              <TileTitle> {dragging?.title} </TileTitle>
-            </Tile>
+            {dragging && <SiteTile site={dragging} />}
           </DragOverlay>
         </SortableContext>
       </DndContext>

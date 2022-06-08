@@ -45,22 +45,32 @@ function generateGridSiteFavicon(site: NewTab.Site): string {
   return site.favicon
 }
 
+export function SiteTile(props: { site: NewTab.Site, isMenuShowing?: boolean, children?: React.ReactNode, draggable?: ReturnType<typeof useSortable> }) {
+  const { site, isMenuShowing, children, draggable } = props;
+  const style = useMemo(() => ({
+    transform: CSS.Transform.toString(draggable?.transform || null),
+    transition: draggable?.transition,
+    opacity: draggable?.isDragging ? 0 : 1
+  }), [draggable]);
+
+  return <Tile
+    ref={draggable?.setNodeRef} {...draggable?.attributes} {...draggable?.listeners}
+    isDragging={!!draggable?.isDragging}
+    isMenuShowing={!!isMenuShowing}
+    title={site.title}
+    href={site.url}
+    style={style}>
+    {children}
+    <TileFavicon src={generateGridSiteFavicon(site)} />
+    <TileTitle>{site.title}</TileTitle>
+  </Tile>
+}
+
 function TopSite(props: Props) {
   const { siteData, disabled } = props;
 
   const tileMenuRef = useRef<any>();
-  const { attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    isDragging,
-    transition } = useSortable({ id: siteData.id, disabled });
-  const style = useMemo(() => ({
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0 : 1
-  }), [transform, transition, isDragging]);
-
+  const sortable = useSortable({ id: siteData.id, disabled });
   const [showMenu, setShowMenu] = useState(false);
 
   const handleClickOutside = useCallback((e: Event) => {
@@ -108,26 +118,14 @@ function TopSite(props: Props) {
     props.onShowEditTopSite(site)
   }, [props.onShowEditTopSite]);
 
-  console.log('Dragging', isDragging)
-
-  return <div {...attributes} {...listeners} ref={setNodeRef}>
-    <Tile
-    title={siteData.title}
-    tabIndex={0}
-    isDragging={isDragging}
-    isMenuShowing={showMenu}
-    href={siteData.url}
-    style={style}
-  >
-    {
-      !siteData.defaultSRTopSite
-        ? <TileActionsContainer>
-          <TileAction onClick={onShowTileMenu}>
-            <EditIcon />
-          </TileAction>
-        </TileActionsContainer>
-        : null
-    }
+  return <SiteTile site={props.siteData} draggable={sortable} isMenuShowing={showMenu}>
+    {!siteData.defaultSRTopSite
+      ? <TileActionsContainer>
+        <TileAction onClick={onShowTileMenu}>
+          <EditIcon />
+        </TileAction>
+      </TileActionsContainer>
+      : null}
     {showMenu &&
       <TileMenu ref={tileMenuRef}>
         <TileMenuItem onClick={e => onEditTopSite(siteData, e)}>
@@ -138,15 +136,8 @@ function TopSite(props: Props) {
           <TrashIcon />
           {getLocale('removeTileMenuItem')}
         </TileMenuItem>
-      </TileMenu>
-    }
-    <TileFavicon
-      draggable={isDragging}
-      src={generateGridSiteFavicon(siteData)}
-    />
-    <TileTitle> {siteData.title} </TileTitle>
-  </Tile>
-  </div>;
+      </TileMenu>}
+  </SiteTile>
 }
 
 export default TopSite
