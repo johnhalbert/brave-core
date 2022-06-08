@@ -35,7 +35,6 @@ interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
   siteData: NewTab.Site
   disabled: boolean
-  isDragging: boolean
   onShowEditTopSite: (targetTopSiteForEditing?: NewTab.Site) => void
 }
 

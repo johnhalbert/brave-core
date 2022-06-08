@@ -4,7 +4,7 @@
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
 // DnD Kit
-import { AutoScrollOptions, DndContext, DragEndEvent, KeyboardSensor, MouseSensor, PointerActivationConstraint, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { AutoScrollOptions, DndContext, DragEndEvent, KeyboardSensor, MouseSensor, PointerActivationConstraint, TouchSensor, useDndContext, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
 import * as React from 'react';
 import { useCallback, useRef } from 'react';
@@ -35,22 +35,22 @@ interface Props {
 function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
   const start = props.page * props.maxGridSize;
   const items = props.gridSites.slice(start, start + props.maxGridSize);
+  const { active } = useDndContext();
   return <List blockNumber={props.maxGridSize}>
     {items.map((siteData) => (
       <GridSiteTile
         key={siteData.id}
         actions={props.actions}
         siteData={siteData}
-        isDragging={false}
         onShowEditTopSite={props.onShowEditTopSite}
         // User can't change order in "Most Visited" mode
         // and they can't change position of super referral tiles
         disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
       />
     ))}
-    {false &&
+    {start + props.maxGridSize > props.gridSites.length &&
       <AddSiteTile
-        isDragging={false}
+        isDragging={!!active}
         showEditTopSite={props.onShowEditTopSite}
       />}
   </List>
