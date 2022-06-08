@@ -20,6 +20,10 @@ class PrefixIterator {
   using iterator_category = std::random_access_iterator_tag;
   using value_type = base::StringPiece;
   using difference_type = std::ptrdiff_t;
+  using reference = value_type&;
+  using const_reference = const value_type&;
+  using pointer = value_type*;
+  using const_pointer = const value_type*;
 
   PrefixIterator(const char* data, size_t index, size_t size)
       : data_(data), index_(index), size_(size) {}
