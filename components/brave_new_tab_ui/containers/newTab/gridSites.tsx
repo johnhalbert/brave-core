@@ -48,8 +48,9 @@ function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
         disabled={siteData.defaultSRTopSite || !props.customLinksEnabled}
       />
     ))}
-    {start + props.maxGridSize > props.gridSites.length &&
-      <AddSiteTile
+    {start + props.maxGridSize > props.gridSites.length
+      && props.customLinksEnabled
+      && <AddSiteTile
         isDragging={!!active}
         showEditTopSite={props.onShowEditTopSite}
       />}
@@ -58,7 +59,6 @@ function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
 
 function TopSitesList(props: Props) {
   const { gridSites, customLinksEnabled } = props
-  // const insertAddSiteTile = customLinksEnabled && gridSites.length < MAX_GRID_SIZE
   let maxGridSize = customLinksEnabled ? MAX_GRID_SIZE : (MAX_GRID_SIZE / 2)
 
   // In favorites mode, makes widget area fits to tops sites items count + 1 if
@@ -75,7 +75,6 @@ function TopSitesList(props: Props) {
   }
 
   const gridPagesContainerRef = useRef<HTMLDivElement>();
-  // const [dragging, _] = useState(false);
 
   const pages = Math.floor(gridSites.length / maxGridSize) + 1;
   const iterator: number[] = [];
