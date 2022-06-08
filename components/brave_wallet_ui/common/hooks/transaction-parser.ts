@@ -250,7 +250,7 @@ export function useTransactionParser (
         ? solTxData?.lamports.toString() ?? ''
         : txData?.baseData.value || ''
 
-    const to = isSolTransaction
+    let to = isSolTransaction
       ? solTxData?.toWalletAddress ?? ''
       : txData?.baseData.to || ''
 
@@ -272,6 +272,11 @@ export function useTransactionParser (
             case 'Transfer':
             case 'TransferWithSeed': {
               const { fromPubkey, toPubkey } = params as Solana.TransferParams | Solana.TransferWithSeedParams
+
+              if (!to) {
+                to = toPubkey.toString() ?? ''
+              }
+
               // only show lamports as transfered if the amount is going to a different pubKey
               if (!toPubkey.equals(fromPubkey)) {
                 return acc.plus(lamportsAmount)
@@ -281,6 +286,11 @@ export function useTransactionParser (
 
             case 'WithdrawNonceAccount': {
               const { noncePubkey, toPubkey } = params as Solana.WithdrawNonceParams
+
+              if (!to) {
+                to = toPubkey.toString() ?? ''
+              }
+
               if (noncePubkey.equals(new Solana.PublicKey(fromAddress))) {
                 return acc.plus(lamportsAmount)
               }
@@ -288,10 +298,23 @@ export function useTransactionParser (
               if (toPubkey.equals(new Solana.PublicKey(fromAddress))) {
                 return acc.minus(lamportsAmount)
               }
+
+              return acc
             }
 
             case 'Create':
-            case 'CreateWithSeed':
+            case 'CreateWithSeed': {
+              const { fromPubkey, newAccountPubkey } = params as Solana.CreateAccountParams | Solana.CreateAccountWithSeedParams
+              if (!to) {
+                to = newAccountPubkey.toString() ?? ''
+              }
+
+              if (fromPubkey.toString() === fromAddress) {
+                return acc.plus(lamportsAmount)
+              }
+
+              return acc
+            }
             default: return acc.plus(lamportsAmount)
           }
         }, new Amount(0)) ?? 0
