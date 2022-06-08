@@ -6,13 +6,13 @@
 import * as React from 'react'
 
 // DnD Kit
-import { AutoScrollOptions, DndContext, DragEndEvent, KeyboardSensor, MouseSensor, PointerActivationConstraint, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { AutoScrollOptions, DndContext, DragEndEvent, DragOverlay, DragStartEvent, KeyboardSensor, MouseSensor, PointerActivationConstraint, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
 
 
 
 // Feature-specific components
-import { List, ListPageButtonContainer, PagesContainer } from '../../components/default/gridSites'
+import { List, ListPageButtonContainer, PagesContainer, Tile, TileFavicon, TileTitle } from '../../components/default/gridSites'
 import createWidget from '../../components/default/widget'
 
 // Component groups
@@ -25,7 +25,7 @@ import { MAX_GRID_SIZE } from '../../constants/new_tab_ui'
 // Types
 import * as newTabActions from '../../actions/new_tab_actions'
 import * as gridSitesActions from '../../actions/grid_sites_actions'
-import { useState, useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { GridPagesContainer } from '../../components/default/gridSites/gridPagesContainer'
 import GridPageButton, { GridPageIndicator } from '../../components/default/gridSites/gridPageButton'
 
@@ -40,11 +40,10 @@ interface Props {
 }
 
 function TopSitesPage(props: Props & { maxGridSize: number, page: number }) {
-  useState();
   const start = props.page * props.maxGridSize;
   const items = props.gridSites.slice(start, start + props.maxGridSize);
   return <List blockNumber={props.maxGridSize}>
-    {items.map((siteData: NewTab.Site, index: number) => (
+    {items.map((siteData) => (
       <GridSiteTile
         key={siteData.id}
         actions={props.actions}
@@ -101,9 +100,13 @@ function TopSitesList(props: Props) {
   }, []);
 
   const onSortEnd = useCallback((e: DragEndEvent) => {
+    e.activatorEvent.preventDefault();
+    e.activatorEvent.stopPropagation();
+    e.activatorEvent.stopImmediatePropagation();
+
     const draggingIndex = gridSites.findIndex(s => s.id == e.active.id);
     const droppedIndex = gridSites.findIndex(s => s.id === e.over?.id);
-    console.log(e, draggingIndex, droppedIndex);
+    console.log(e.activatorEvent.type, e, draggingIndex, droppedIndex);
 
     if (draggingIndex === undefined || droppedIndex === undefined) return;
 
@@ -118,6 +121,13 @@ function TopSitesList(props: Props) {
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
+  const [dragging, setDragging] = useState<NewTab.Site | undefined>(undefined);
+  const onDragStart = useCallback((e: DragStartEvent) => {
+    const site = gridSites.find(x => x.id === e.active.id);
+    console.log(site);
+    setDragging(site);
+  }, [gridSites]);
+
   // Current theory:
   // Either:
   // 1. Sort the items how they're displayed, in a two row, infinite column
@@ -125,9 +135,18 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} id="grid-pages-container" onScroll={scrollHandler}>
-      <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors}>
+      <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors} onDragStart={onDragStart}>
         <SortableContext items={gridSites}>
           {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
+          <DragOverlay>
+            <Tile isDragging={true} isMenuShowing={false}>
+              <TileFavicon
+                draggable={true}
+                src={dragging?.favicon || `chrome://favicon/size/64@1x/${dragging?.url}`}
+              />
+              <TileTitle> {dragging?.title} </TileTitle>
+            </Tile>
+          </DragOverlay>
         </SortableContext>
       </DndContext>
     </GridPagesContainer>

@@ -28,7 +28,7 @@ import * as gridSitesActions from '../../actions/grid_sites_actions'
 import { getLocale } from '../../../common/locale'
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
-import {CSS} from '@dnd-kit/utilities';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -46,7 +46,7 @@ function generateGridSiteFavicon(site: NewTab.Site): string {
 }
 
 function TopSite(props: Props) {
-  const { siteData } = props;
+  const { siteData, disabled } = props;
 
   const tileMenuRef = useRef<any>();
   const { attributes,
@@ -54,11 +54,12 @@ function TopSite(props: Props) {
     setNodeRef,
     transform,
     isDragging,
-    transition } = useSortable({ id: siteData.id });
+    transition } = useSortable({ id: siteData.id, disabled });
   const style = useMemo(() => ({
     transform: CSS.Transform.toString(transform),
     transition,
-  }), [transform, transition]);
+    opacity: isDragging ? 0 : 1
+  }), [transform, transition, isDragging]);
 
   const [showMenu, setShowMenu] = useState(false);
 
@@ -107,21 +108,15 @@ function TopSite(props: Props) {
     props.onShowEditTopSite(site)
   }, [props.onShowEditTopSite]);
 
-  return <Tile
-    {...attributes}
-    {...listeners}
-    ref={setNodeRef}
+  console.log('Dragging', isDragging)
+
+  return <div {...attributes} {...listeners} ref={setNodeRef}>
+    <Tile
     title={siteData.title}
     tabIndex={0}
     isDragging={isDragging}
     isMenuShowing={showMenu}
-    onClick={e => {
-      if (isDragging) {
-        e.preventDefault();
-        console.log("Prevented!");
-      }
-    }}
-    // href={siteData.url}
+    href={siteData.url}
     style={style}
   >
     {
@@ -150,7 +145,8 @@ function TopSite(props: Props) {
       src={generateGridSiteFavicon(siteData)}
     />
     <TileTitle> {siteData.title} </TileTitle>
-  </Tile>;
+  </Tile>
+  </div>;
 }
 
 export default TopSite
