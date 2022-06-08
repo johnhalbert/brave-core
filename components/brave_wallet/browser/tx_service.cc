@@ -272,6 +272,13 @@ void TxService::GetNonceForHardwareTransaction(
                                                     std::move(callback));
 }
 
+void TxService::GetNonceForSolanaHardwareTransaction(
+    const std::string& tx_meta_id,
+    GetNonceForHardwareTransactionCallback callback) {
+  GetSolanaTxManager()->GetNonceForSolanaHardwareTransaction(
+      tx_meta_id, std::move(callback));
+}
+
 void TxService::ProcessHardwareSignature(
     const std::string& tx_meta_id,
     const std::string& v,
@@ -309,6 +316,14 @@ void TxService::MakeTokenProgramTransferTxData(
 void TxService::GetEstimatedTxFee(const std::string& tx_meta_id,
                                   GetEstimatedTxFeeCallback callback) {
   GetSolanaTxManager()->GetEstimatedTxFee(tx_meta_id, std::move(callback));
+}
+
+void TxService::ProcessSolanaHardwareSignature(
+    const std::string& tx_meta_id,
+    const std::string& signed_message,
+    ProcessSolanaHardwareSignatureCallback callback) {
+  GetSolanaTxManager()->ProcessSolanaHardwareSignature(
+      tx_meta_id, signed_message, std::move(callback));
 }
 
 void TxService::ProcessFilHardwareSignature(
