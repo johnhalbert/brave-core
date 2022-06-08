@@ -66,12 +66,11 @@ export function SiteTile(props: { site: NewTab.Site, isMenuShowing?: boolean, ch
   </Tile>
 }
 
-const placeholderSite: NewTab.Site = {favicon: '', id: '', title: '', letter: '', url: '', pinnedIndex: undefined, defaultSRTopSite: undefined };
 export function TopSiteDragOverlay(props: { sites: NewTab.Site[] }) {
   const { active } = useDndContext();
   const dragging = active && props.sites.find(s => s.id === active.id);
   return <DragOverlay>
-    <SiteTile site={dragging ?? placeholderSite}/>
+    {dragging && <SiteTile site={dragging}/>}
   </DragOverlay>
 }
 

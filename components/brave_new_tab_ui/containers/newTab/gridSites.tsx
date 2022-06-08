@@ -91,7 +91,6 @@ function TopSitesList(props: Props) {
 
   const onSortEnd = useCallback((e: DragEndEvent) => {
     e.activatorEvent.preventDefault();
-    e.activatorEvent.stopPropagation();
 
     const draggingIndex = gridSites.findIndex(s => s.id == e.active.id);
     const droppedIndex = gridSites.findIndex(s => s.id === e.over?.id);
