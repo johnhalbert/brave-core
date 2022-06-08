@@ -3,31 +3,24 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as React from 'react'
-
 // DnD Kit
-import { AutoScrollOptions, DndContext, DragEndEvent, DragOverlay, DragStartEvent, KeyboardSensor, MouseSensor, PointerActivationConstraint, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { AutoScrollOptions, DndContext, DragEndEvent, KeyboardSensor, MouseSensor, PointerActivationConstraint, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
-
-
-
-// Feature-specific components
-import { List, ListPageButtonContainer, PagesContainer } from '../../components/default/gridSites'
-import createWidget from '../../components/default/widget'
-
-// Component groups
-import GridSiteTile, { SiteTile } from './gridTile'
-import AddSiteTile from './addSiteTile'
-
-// Constants
-import { MAX_GRID_SIZE } from '../../constants/new_tab_ui'
-
+import * as React from 'react';
+import { useCallback, useRef } from 'react';
+import * as gridSitesActions from '../../actions/grid_sites_actions';
 // Types
-import * as newTabActions from '../../actions/new_tab_actions'
-import * as gridSitesActions from '../../actions/grid_sites_actions'
-import { useCallback, useRef, useState } from 'react'
-import { GridPagesContainer } from '../../components/default/gridSites/gridPagesContainer'
-import GridPageButton, { GridPageIndicator } from '../../components/default/gridSites/gridPageButton'
+import * as newTabActions from '../../actions/new_tab_actions';
+// Feature-specific components
+import { List, ListPageButtonContainer, PagesContainer } from '../../components/default/gridSites';
+import GridPageButton, { GridPageIndicator } from '../../components/default/gridSites/gridPageButton';
+import { GridPagesContainer } from '../../components/default/gridSites/gridPagesContainer';
+import createWidget from '../../components/default/widget';
+// Constants
+import { MAX_GRID_SIZE } from '../../constants/new_tab_ui';
+import AddSiteTile from './addSiteTile';
+// Component groups
+import GridSiteTile, { TopSiteDragOverlay } from './gridTile';
 
 const activationConstraint: PointerActivationConstraint = { distance: 2 };
 const autoScrollOptions: AutoScrollOptions = { interval: 500 };
@@ -121,13 +114,6 @@ function TopSitesList(props: Props) {
   const keyboardSensor = useSensor(KeyboardSensor, {});
   const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
 
-  const [dragging, setDragging] = useState<NewTab.Site | undefined>(undefined);
-  const onDragStart = useCallback((e: DragStartEvent) => {
-    const site = gridSites.find(x => x.id === e.active.id);
-    console.log(site);
-    setDragging(site);
-  }, [gridSites]);
-
   // Current theory:
   // Either:
   // 1. Sort the items how they're displayed, in a two row, infinite column
@@ -135,12 +121,10 @@ function TopSitesList(props: Props) {
   // 2. Multiple pages, use dndkit.
   return <PagesContainer>
     <GridPagesContainer ref={gridPagesContainerRef as any} onScroll={scrollHandler}>
-      <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors} onDragStart={onDragStart}>
+      <DndContext onDragEnd={onSortEnd} autoScroll={autoScrollOptions} sensors={sensors}>
         <SortableContext items={gridSites}>
           {iterator.map(page => <TopSitesPage key={page} page={page} maxGridSize={maxGridSize} {...props} />)}
-          <DragOverlay>
-            {dragging && <SiteTile site={dragging} />}
-          </DragOverlay>
+          <TopSiteDragOverlay sites={gridSites} />
         </SortableContext>
       </DndContext>
     </GridPagesContainer>

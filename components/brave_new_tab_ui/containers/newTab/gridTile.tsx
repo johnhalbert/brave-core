@@ -29,6 +29,7 @@ import { getLocale } from '../../../common/locale'
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities';
+import { DragOverlay, useDndContext } from '@dnd-kit/core'
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -64,6 +65,15 @@ export function SiteTile(props: { site: NewTab.Site, isMenuShowing?: boolean, ch
     <TileFavicon src={generateGridSiteFavicon(site)} />
     <TileTitle>{site.title}</TileTitle>
   </Tile>
+}
+
+const placeholderSite: NewTab.Site = {favicon: '', id: '', title: '', letter: '', url: '', pinnedIndex: undefined, defaultSRTopSite: undefined };
+export function TopSiteDragOverlay(props: { sites: NewTab.Site[] }) {
+  const { active } = useDndContext();
+  const dragging = active && props.sites.find(s => s.id === active.id);
+  return <DragOverlay>
+    <SiteTile site={dragging ?? placeholderSite}/>
+  </DragOverlay>
 }
 
 function TopSite(props: Props) {
