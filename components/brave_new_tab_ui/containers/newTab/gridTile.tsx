@@ -3,33 +3,25 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
 // you can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import * as React from 'react'
-
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getLocale } from '../../../common/locale'
+import * as gridSitesActions from '../../actions/grid_sites_actions'
+// Types
+import * as newTabActions from '../../actions/new_tab_actions'
 // Feature-specific components
 import {
-  Tile,
-  TileActionsContainer,
-  TileAction,
-  TileFavicon,
+  Tile, TileAction, TileActionsContainer, TileFavicon,
   TileMenu,
   TileMenuItem,
   TileTitle
 } from '../../components/default'
-
 // Icons
 import EditIcon from '../../components/default/gridSites/assets/edit'
 import EditMenuIcon from '../../components/default/gridSites/assets/edit-menu'
 import TrashIcon from '../../components/default/gridSites/assets/trash'
-
-// Types
-import * as newTabActions from '../../actions/new_tab_actions'
-import * as gridSitesActions from '../../actions/grid_sites_actions'
-
-import { getLocale } from '../../../common/locale'
-import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities';
-import { DragOverlay, useDndContext } from '@dnd-kit/core'
 
 interface Props {
   actions: typeof newTabActions & typeof gridSitesActions
@@ -64,14 +56,6 @@ export function SiteTile(props: { site: NewTab.Site, isMenuShowing?: boolean, ch
     <TileFavicon src={generateGridSiteFavicon(site)} />
     <TileTitle>{site.title}</TileTitle>
   </Tile>
-}
-
-export function TopSiteDragOverlay(props: { sites: NewTab.Site[] }) {
-  const { active } = useDndContext();
-  const dragging = active && props.sites.find(s => s.id === active.id);
-  return <DragOverlay>
-    {dragging && <SiteTile site={dragging}/>}
-  </DragOverlay>
 }
 
 function TopSite(props: Props) {

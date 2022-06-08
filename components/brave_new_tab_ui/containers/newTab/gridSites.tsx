@@ -20,7 +20,8 @@ import createWidget from '../../components/default/widget';
 import { MAX_GRID_SIZE } from '../../constants/new_tab_ui';
 import AddSiteTile from './addSiteTile';
 // Component groups
-import GridSiteTile, { TopSiteDragOverlay } from './gridTile';
+import GridSiteTile from './gridTile';
+import { TopSiteDragOverlay } from './gridTileOverlay';
 
 const activationConstraint: PointerActivationConstraint = { distance: 2 };
 const autoScrollOptions: AutoScrollOptions = { interval: 500 };
